@@ -14,7 +14,7 @@
   * If no LICENSE file comes with this software, it is provided AS-IS.
   *
   ******************************************************************************
-  * initial rellase
+  * dbg port
   *
   *
   ******************************************************************************
@@ -102,6 +102,8 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   printf("\r\nSTM32F303 HAL init\r\n");
+  printf("\r\nUART1 250kbps RS485"\r\n");
+  printf("\r\nUART2 250kbps VCP debug port"\r\n");
 
   /* USER CODE END 2 */
 
