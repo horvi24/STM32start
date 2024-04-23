@@ -119,10 +119,11 @@ int main(void)
 
 
 
-  printf("\r\nSTM32F303 HAL init\r\n");
-  printf("UART1 250kbps RS485 ok\r\n");
-  printf("UART2 250kbps VCP debug port ok\r\n");
-  printf("TIM3 4x PWM ok\r\n");
+  printf("\r\nSTM32F303 HALinit b0.01\r\n");
+  printf("\r\n36MHz internal clock\r\n");
+  printf("UART1 250kbps RS485\r\n");
+  printf("UART2 250kbps VCP debug port\r\n");
+  printf("TIM3 4xPWM@1kHz CH1-PB4, CH2-PA7, CH3-PB0 ,CH4-PB1\r\n");
 
   /* USER CODE END 2 */
 
@@ -206,9 +207,9 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 72-1;
+  htim3.Init.Prescaler = 36-1;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 100-1;
+  htim3.Init.Period = 1000-1;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -232,7 +233,7 @@ static void MX_TIM3_Init(void)
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
   sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_LOW;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
   {
