@@ -51,6 +51,8 @@ UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+uint16_t pwm_value = 0;
+int8_t step = 0;
 
 /* USER CODE END PV */
 
@@ -113,7 +115,7 @@ main(void) {
     TIM3->CCR2 = 30;
     TIM3->CCR3 = 50;
     TIM3->CCR4 = 70;
-    HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1); //coment test
     HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
     HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
     HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
@@ -129,10 +131,10 @@ main(void) {
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     while (1) {
-        HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+        //HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
         // HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+        //HAL_Delay(500);
 
-        HAL_Delay(500);
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */
