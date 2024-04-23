@@ -1,0 +1,5 @@
+chloe.periermuzet@st.com (seminar)
+
+Ctrl+Space ...inline help box
+
+Ctrl+Shift+F ...C code style correction (clang-format)
