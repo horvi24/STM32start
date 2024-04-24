@@ -17,7 +17,14 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+#include <stdio.h>
+#include <string.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <cstring>
 #include "main.h"
+#include "DMXSerial2.h"
+#include <string>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -31,6 +38,19 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define ACTIVEPWMCHANNELCOUNT 12   //1 =12
+
+
+#define PAGE_SETTING_START 123
+#define PAGE_SETTING_COUNT 4
+
+
+#define SWAPINT32(i) ((i&0x000000ff)<<24) | ((i&0x0000ff00)<<8) | ((i&0x00ff0000)>>8) | ((i&0xff000000)>>24)
+// read a 16 bit number from a data buffer location
+#define READINT(p) ((p[0]<<8) | (p[1]))
+// write a 16 bit number to a data buffer location
+#define WRITEINT(p, d) (p)[0] = (d&0xFF00)>>8; (p)[1] = (d&0x00FF);
+
 
 /* USER CODE END PD */
 
@@ -46,8 +66,19 @@ UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+bool eepromneedtosave=false;
+unsigned long tickcounter=0;
+extern int currentresolution;
+
+// load save stuff
+uint16_t eepromid;
+uint16_t start_address;
+uint16_t footprint;
+uint16_t _newpersonality;
+char label[32];
+
 uint16_t pwmR, pwmG, pwmB, pwmW;
-int8_t stepR, stepG = 20, stepB = -40, stepW = 5;
+//int8_t stepR, stepG = 20, stepB = -40, stepW = 5;
 
 /* USER CODE END PV */
 
@@ -59,6 +90,12 @@ static void MX_TIM3_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
+void init_settings();
+void load_settings();
+void save_settings();
+void DiscoveryFlash(int flashval);
+bool8 processCommand(struct RDMDATA *rdm, uint16_t *nackReason);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -66,6 +103,23 @@ static void MX_USART1_UART_Init(void);
 int _write(int file, char *ptr, int len) {
 	HAL_UART_Transmit(&huart2, (uint8_t*) ptr, len, HAL_MAX_DELAY);
 	return len;
+}
+
+const uint16_t my_pids[] = { E120_DEVICE_HOURS, E120_LAMP_HOURS };
+
+struct RDMINIT rdmInit = {
+  "yourmanuf", // Manufacturer Label
+  1, // Device Model ID
+  "my model", // Device Model Label
+  24, // footprint
+  (sizeof(my_pids) / sizeof(uint16_t)), my_pids,
+  0, NULL
+};
+
+
+unsigned int millis2()
+{
+	return HAL_GetTick();
 }
 
 /* USER CODE END 0 */
@@ -103,6 +157,7 @@ int main(void)
   MX_TIM3_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+
 	pwmR = 0;
 	pwmG = 580;
 	pwmB = 900;
@@ -134,7 +189,7 @@ int main(void)
   {
 	  //HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
 	  //HAL_Delay(500);
-
+/*
 		if (pwmR == 0)    stepR = 10;
 		if (pwmR == 1000) stepR = -10;
 		pwmR += stepR;
@@ -153,7 +208,7 @@ int main(void)
 		TIM3->CCR3 = pwmB;
 		TIM3->CCR4 = pwmW;
 		HAL_Delay(9);
-
+*/
 
     /* USER CODE END WHILE */
 
