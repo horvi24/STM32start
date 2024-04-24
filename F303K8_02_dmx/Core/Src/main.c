@@ -122,7 +122,7 @@ int main(void) {
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
 
-	printf("\r\nSTM32F303 HALinit b0.01\r\n");
+	printf("\r\nSTM32F303 DMX b0.01\r\n");
 	printf("\r\n36MHz internal clock\r\n");
 	printf("UART1 250kbps RS485\r\n");
 	printf("UART2 250kbps VCP debug port\r\n");
