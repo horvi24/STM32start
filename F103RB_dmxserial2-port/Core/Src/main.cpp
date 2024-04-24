@@ -142,7 +142,7 @@ int main(void) {
     MX_USART3_UART_Init();
     /* USER CODE BEGIN 2 */
 
-    //*h24 currentresolution=0;
+    currentresolution=0;
 
 
     HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);
