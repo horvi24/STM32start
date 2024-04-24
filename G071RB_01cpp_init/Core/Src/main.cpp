@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include <cstdio>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -46,6 +47,8 @@ UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+uint16_t pwmR, pwmG, pwmB, pwmW;
+int8_t stepR, stepG = 20, stepB = -40, stepW = 5;
 
 /* USER CODE END PV */
 
@@ -61,6 +64,10 @@ static void MX_USART1_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+int _write(int file, char *ptr, int len) {
+	HAL_UART_Transmit(&huart2, (uint8_t*) ptr, len, HAL_MAX_DELAY);
+	return len;
+}
 
 /* USER CODE END 0 */
 
@@ -95,7 +102,27 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM3_Init();
   MX_USART1_UART_Init();
+
   /* USER CODE BEGIN 2 */
+	pwmR = 0;
+	pwmG = 580;
+	pwmB = 900;
+	pwmB = 0;
+
+	TIM3->CCR1 = pwmR;
+	TIM3->CCR2 = pwmG;
+	TIM3->CCR3 = pwmB;
+	TIM3->CCR4 = pwmW;
+	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1); //coment test
+	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
+
+	printf("\r\nSTM32G071RB DMX b0.01\r\n");
+	printf("\r\n16MHz internal clock\r\n");
+	printf("UART1 250kbps RS485\r\n");
+	printf("UART2 250kbps VCP debug port\r\n");
+	printf("TIM3 4xPWM@1kHz CH1-PB4, CH2-PA7, CH3-PB0 ,CH4-PB1\r\n");
 
   /* USER CODE END 2 */
 
@@ -103,8 +130,28 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
-	  HAL_Delay(500);
+	  //HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
+	  //HAL_Delay(500);
+
+		if (pwmR == 0)    stepR = 10;
+		if (pwmR == 1000) stepR = -10;
+		pwmR += stepR;
+		if (pwmG == 0)    stepG = 20;
+		if (pwmG == 1000) stepG = -20;
+		pwmG += stepG;
+		if (pwmB == 0)    stepB = 40;
+		if (pwmB == 1000) stepB = -40;
+		pwmB += stepB;
+		if (pwmW == 0)    stepB = 5;
+		if (pwmW == 1000) stepB = -5;
+		pwmW += stepW;
+
+		TIM3->CCR1 = pwmR;
+		TIM3->CCR2 = pwmG;
+		TIM3->CCR3 = pwmB;
+		TIM3->CCR4 = pwmW;
+		HAL_Delay(9);
+
 
 	  /* USER CODE END WHILE */
 

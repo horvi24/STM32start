@@ -51,8 +51,8 @@ UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-uint16_t pwmR, pwmG, pwmB;
-int8_t stepR, stepG = 20, stepB = -40;
+uint16_t pwmR, pwmG, pwmB, pwmW;
+int8_t stepR, stepG = 20, stepB = -40, stepW = 5;
 
 /* USER CODE END PV */
 
@@ -145,10 +145,14 @@ int main(void) {
 		if (pwmB == 0)    stepB = 40;
 		if (pwmB == 1000) stepB = -40;
 		pwmB += stepB;
+		if (pwmW == 0)    stepB = 5;
+		if (pwmW == 1000) stepB = -5;
+		pwmW += stepW;
 
 		TIM3->CCR1 = pwmR;
 		TIM3->CCR2 = pwmG;
 		TIM3->CCR3 = pwmB;
+		TIM3->CCR4 = pwmW;
 		HAL_Delay(9);
 
 		/* USER CODE END WHILE */
