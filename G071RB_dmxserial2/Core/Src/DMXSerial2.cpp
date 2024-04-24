@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <cstring>
 #include "main.h"
-//*h24 #include "eeprom.h"
+#include "eeprom.h" //fake lib
 #include "DMXSerial2.h"
 
 #define SWAPINT(i) (((i&0x00FF)<<8) | ((i&0xFF00)>>8))
@@ -335,7 +335,8 @@ void DMXSerialClass2::init(struct RDMINIT *initData, RDMCallbackFunction func, R
   // _dmxSendLen = ... will be set individually
 
   // Enable receiver and RX COMPLETE interrupts
-   USART1->CR1 |= ( USART_CR1_RE |USART_CR1_RXNEIE );
+//*h24   USART1->CR1 |= ( USART_CR1_RE |USART_CR1_RXNEIE );
+   USART1->CR1 |= ( USART_CR1_RE |USART_CR1_RXNEIE_RXFNEIE );
    printf("Listening on DMX address #");
 
    printf("%i\n",start_address);
