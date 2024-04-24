@@ -18,7 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include <cstdio>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -77,6 +76,7 @@ int _write(int file, char *ptr, int len) {
   */
 int main(void)
 {
+
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -102,7 +102,6 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM3_Init();
   MX_USART1_UART_Init();
-
   /* USER CODE BEGIN 2 */
 	pwmR = 0;
 	pwmG = 580;
@@ -117,6 +116,9 @@ int main(void)
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
+
+
+	//HAL_GPIO_WritePin(LED_GREEN_GPIO_Port,LED_GREEN_Pin,GPIO_PIN_SET);
 
 	printf("\r\nSTM32G071RB DMX b0.01\r\n");
 	printf("\r\n16MHz internal clock\r\n");
@@ -153,7 +155,7 @@ int main(void)
 		HAL_Delay(9);
 
 
-	  /* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
