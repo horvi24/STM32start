@@ -140,7 +140,7 @@ int main(void)
 	//HAL_GPIO_WritePin(LED_GREEN_GPIO_Port,LED_GREEN_Pin,GPIO_PIN_SET);
 
 
-	printf("\r\nG071RB DmxSerial2 port\r\n");
+	printf("\r\nG071RB DmxSerial port...\r\n");
 
   /* USER CODE END 2 */
 
