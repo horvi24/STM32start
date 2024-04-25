@@ -122,7 +122,7 @@ int main(void)
 	//HAL_GPIO_WritePin(LED_GREEN_GPIO_Port,LED_GREEN_Pin,GPIO_PIN_SET);
 
 
-	printf("\r\nSTM32G071RB DMX b0.01\r\n");
+	printf("\r\nSTM32G071RB DS2port\r\n");
 	printf("\r\n16MHz internal clock\r\n");
 	printf("UART1 250kbps RS485\r\n");
 	printf("UART2 250kbps VCP debug port\r\n");
