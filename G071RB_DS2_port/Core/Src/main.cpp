@@ -17,11 +17,11 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include <cstdio>
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <cstdio>
 
 /* USER CODE END Includes */
 
@@ -140,11 +140,7 @@ int main(void)
 	//HAL_GPIO_WritePin(LED_GREEN_GPIO_Port,LED_GREEN_Pin,GPIO_PIN_SET);
 
 
-	printf("\r\nSTM32G071RB DmxSerial2 port\r\n");
-	printf("\r\n16MHz internal clock\r\n");
-	printf("UART1 250kbps RS485\r\n");
-	printf("UART2 250kbps VCP debug port\r\n");
-	printf("TIM3 4xPWM@1kHz CH1-PB4, CH2-PA7, CH3-PB0 ,CH4-PB1\r\n");
+	printf("\r\nG071RB DmxSerial2 port\r\n");
 
   /* USER CODE END 2 */
 
