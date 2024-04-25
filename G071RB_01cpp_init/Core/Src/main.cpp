@@ -17,7 +17,7 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-//#include <cstdio>
+#include <cstdio>
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -64,7 +64,7 @@ static void MX_USART1_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-int _write(int file, char *ptr, int len) {
+extern "C" int _write(int file, char *ptr, int len) {
 	HAL_UART_Transmit(&huart2, (uint8_t*) ptr, len, HAL_MAX_DELAY);
 	return len;
 }
@@ -122,7 +122,7 @@ int main(void)
 	//HAL_GPIO_WritePin(LED_GREEN_GPIO_Port,LED_GREEN_Pin,GPIO_PIN_SET);
 
 
-	printf("\r\nSTM32G071RB DMX b0.01\r\n");
+	printf("\r\nSTM32G071RB PWM C++\r\n");
 	printf("\r\n16MHz internal clock\r\n");
 	printf("UART1 250kbps RS485\r\n");
 	printf("UART2 250kbps VCP debug port\r\n");
