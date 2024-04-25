@@ -60,13 +60,31 @@ static void MX_TIM3_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
+#ifdef __GNUC__
+/* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
+   set to 'Yes') calls __io_putchar() */
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif /* __GNUC__ */
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+/*
 extern "C" int _write(int file, char *ptr, int len) {
 	HAL_UART_Transmit(&huart2, (uint8_t*) ptr, len, HAL_MAX_DELAY);
 	return len;
+}
+*/
+extern "C" PUTCHAR_PROTOTYPE
+{
+  /* Place your implementation of fputc here */
+  /* e.g. write a character to the USART2 and Loop until the end of transmission */
+  HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, 0xFFFF);
+
+  return ch;
 }
 
 /* USER CODE END 0 */
@@ -122,7 +140,7 @@ int main(void)
 	//HAL_GPIO_WritePin(LED_GREEN_GPIO_Port,LED_GREEN_Pin,GPIO_PIN_SET);
 
 
-	printf("\r\nSTM32G071RB PWM C++\r\n");
+	printf("\r\nSTM32G071RB PWM printf C++\r\n");
 	printf("\r\n16MHz internal clock\r\n");
 	printf("UART1 250kbps RS485\r\n");
 	printf("UART2 250kbps VCP debug port\r\n");
