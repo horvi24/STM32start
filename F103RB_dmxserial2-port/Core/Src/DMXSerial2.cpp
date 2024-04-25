@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <cstring>
 #include "main.h"
-#include "eeprom.h"
+//#include "eeprom.h"
 #include "DMXSerial2.h"
 
 #define SWAPINT(i) (((i&0x00FF)<<8) | ((i&0xFF00)>>8))
@@ -41,6 +41,28 @@ extern uint16_t start_address;
 extern uint16_t footprint;
 extern uint16_t _newpersonality;
 extern char label[32];;
+
+//*h24 >fake functions
+uint16_t readEEPROMHalfWord(uint16_t addr) {
+	printf("readEEPROMHalfWord();");
+	return 1234;
+}
+
+void writeEEPROMHalfWord(uint8_t addr, uint8_t data) {
+	printf("writeEEPROMHalfWord");
+}
+
+void enableEEPROMWriting(void) {
+	printf("writeEEPROMHalfWord");
+
+}
+
+void disableEEPROMWriting(void) {
+	printf("writeEEPROMHalfWord");
+
+}
+//*h24 <fake functions
+
 
 
 void CalculateID()

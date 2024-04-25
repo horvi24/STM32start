@@ -27,6 +27,8 @@
 #include <stdlib.h>
 #include <cstring>
 //#include "main.h"
+#include "eeprom.h"
+
 #include "DMXSerial2.h"
 
 #include <string>
@@ -66,7 +68,11 @@ UART_HandleTypeDef huart3;
 /* USER CODE BEGIN PV */
 bool eepromneedtosave = false;
 unsigned long tickcounter = 0;
-extern int currentresolution;
+//*h24 extern int currentresolution;
+
+// >fake variables
+int currentresolution;
+// <fake variables
 
 // load save stuff
 uint16_t eepromid;
@@ -107,6 +113,15 @@ struct RDMINIT rdmInit = { "yourmanuf", // Manufacturer Label
 unsigned int millis2() {
     return HAL_GetTick();
 }
+// >fake functions
+
+void DiscoveryFlash(int a){
+	printf("DiscoveryFlash\r\n");
+}
+// <fake functions
+
+
+
 /* USER CODE END 0 */
 
 /**
@@ -143,7 +158,6 @@ int main(void) {
     /* USER CODE BEGIN 2 */
 
     currentresolution=0;
-
 
     HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(USART1_IRQn);

@@ -4,11 +4,12 @@
 #define __EEPROM_H
 
 uint16_t readEEPROMHalfWord(uint16_t addr);
-uint16_t writeEEPROMHalfWord(uint16_t addr, uint16_t data);
+void writeEEPROMHalfWord(uint8_t addr, uint8_t data);
+
 
 
 void enableEEPROMWriting(void);
 void disableEEPROMWriting(void);
 
 
-#endif /* __MAIN_H */
+#endif /* __EEPROM_H */

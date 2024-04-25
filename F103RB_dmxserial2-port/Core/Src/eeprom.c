@@ -1,19 +1,21 @@
 #include <stdint.h>
 #include "eeprom.h"
 
-
-uint16_t readEEPROMHalfWord(uint16_t addr){
-    return 1234;
+uint16_t readEEPROMHalfWord(uint16_t addr) {
+	printf("readEEPROMHalfWord();");
+	return 1234;
 }
 
-uint16_t writeEEPROMHalfWord(uint16_t addr, uint16_t data){
-    return 5678;
+void writeEEPROMHalfWord(uint8_t addr, uint8_t data) {
+	printf("writeEEPROMHalfWord");
 }
 
-void enableEEPROMWriting(void){
+void enableEEPROMWriting(void) {
+	printf("writeEEPROMHalfWord");
 
 }
 
-void disableEEPROMWriting(void){
+void disableEEPROMWriting(void) {
+	printf("writeEEPROMHalfWord");
 
 }
