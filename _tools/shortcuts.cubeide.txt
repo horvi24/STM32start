@@ -1,10 +1,10 @@
-chloe.periermuzet@st.com (seminar) 
+chloe.periermuzet@st.com (seminar)
 ------------------------------------
 
 LMC > left mouse click
 RMC > right mouse click
 
-Ctrl+Space ...inline help box
+Ctrl+Space ...auto.complete inline help box
 
 Ctrl+Shift+F ...C code style correction
 
