@@ -10,7 +10,7 @@
 #define TIMER_PERIOD 	0xFFFF
 #define DMX_MAX_SLOTS 	512
 
-extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim1;
 
 static uint32_t BreakTime = 2000;
 static uint32_t MABTime = 200;
@@ -72,7 +72,7 @@ static void first_break_rising(uint32_t OverflowCount)
 		InitBreakFlag = 1;
 
 		/* Enable falling edge interrupt */
-		__HAL_TIM_ENABLE_IT(&htim2, TIM_IT_CC1);
+		__HAL_TIM_ENABLE_IT(&htim1, TIM_IT_CC1);
 
 		/* Remember overflows at start of MAB */
 		MABOverflowCount = OverflowCount;
@@ -103,7 +103,7 @@ static bool next_break_rising(uint32_t OverflowCount)
 	}
 
 	/* Enable falling edge interrupt */
-	__HAL_TIM_ENABLE_IT(&htim2, TIM_IT_CC1);
+	__HAL_TIM_ENABLE_IT(&htim1, TIM_IT_CC1);
 	/* Reset old MAB flag, falling edge interrupt will set it if found */
 	MABFlag = 0;
 	/* For next packet */
@@ -131,10 +131,10 @@ static void rising_edge(void)
 	uint32_t OverflowCount = GlobalOverflowCount;
 
 	/* Store MAB Rising Edge Counter */
-	Counter2 = __HAL_TIM_GET_COUNTER(&htim2);
+	Counter2 = __HAL_TIM_GET_COUNTER(&htim1);
 
 	/* Disable rising edge interrupt */
-	__HAL_TIM_DISABLE_IT(&htim2, TIM_FLAG_CC2);
+	__HAL_TIM_DISABLE_IT(&htim1, TIM_FLAG_CC2);
 
 	/* No Breaks received yet, it is first */
 	if (InitBreakFlag == 0)
@@ -166,10 +166,10 @@ static void falling_edge(void)
 	uint32_t OverflowCount = GlobalOverflowCount;
 
 	/* Disable falling edge interrupt */
-	__HAL_TIM_DISABLE_IT(&htim2, TIM_FLAG_CC1);
+	__HAL_TIM_DISABLE_IT(&htim1, TIM_FLAG_CC1);
 
 	/* It is MAB Falling edge, so store MAB End counter value */
-	Counter3 = __HAL_TIM_GET_COUNTER(&htim2);
+	Counter3 = __HAL_TIM_GET_COUNTER(&htim1);
 
 	/* Calculate MAB Time = MABFalling - MABRising */
 	NetCounter = (Counter3 - Counter2) & TIMER_PERIOD;
@@ -220,9 +220,9 @@ static void frame_error_handler(uint32_t Counter)
 	DMXChannelCount = 0;
 
 	/* Enable rising edge interrupt, to detect Break End */
-	__HAL_TIM_CLEAR_FLAG(&htim2, TIM_IT_CC1);
-	__HAL_TIM_CLEAR_FLAG(&htim2, TIM_IT_CC2);
-	__HAL_TIM_ENABLE_IT(&htim2, TIM_IT_CC2);
+	__HAL_TIM_CLEAR_FLAG(&htim1, TIM_IT_CC1);
+	__HAL_TIM_CLEAR_FLAG(&htim1, TIM_IT_CC2);
+	__HAL_TIM_ENABLE_IT(&htim1, TIM_IT_CC2);
 }
 
 static void receive_data_handler(uint32_t Data)
@@ -257,9 +257,11 @@ static void receive_data_handler(uint32_t Data)
 
 void dmx_uart_handler(UART_HandleTypeDef *huart)
 {
-	uint32_t Counter = __HAL_TIM_GET_COUNTER(&htim2);
-	uint32_t StatusRead = huart->Instance->SR;
-	uint32_t Data = huart->Instance->DR;
+	uint32_t Counter = __HAL_TIM_GET_COUNTER(&htim1);
+//-h24	uint32_t StatusRead = huart->Instance->SR;
+	uint32_t StatusRead = huart->Instance->ISR; //+h24
+//-h24	uint32_t Data = huart->Instance->DR;
+	uint32_t Data = huart->Instance->RDR;		//+h24
 
 	/* Frame Error interrupt happens after 10 bits of 0 (~40us), so it is
 	 * after first 40 us of Break */

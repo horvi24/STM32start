@@ -8,6 +8,7 @@
 #include "dmx_receiver.h"
 #include "led.h"
 //-h24 #include "usb_debug.h"
+#include "dbg.h" //+h24
 
 #define ADC_CHANNELS 		2
 #define ADC_MAX 		1800
@@ -22,7 +23,7 @@ static void process_adc(uint16_t *data)
 {
 	uint8_t ch;
 
-	HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+	HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
 
 	for (ch = 0; ch < ADC_CHANNELS; ch++)
 		adc[ch] = data[ch];
@@ -30,12 +31,16 @@ static void process_adc(uint16_t *data)
 
 bool core_init(void)
 {
+/*-h24
 	if (!adc_init(&hadc1, ADC_CHANNELS, process_adc))
 		return false;
-
+*/
+/*-h24
 	if (!led_init(&htim4));
 		return false;
-
+*/
+	if (!led_init(&htim4))	//+h24
+		return false;
 //-h24	usb_printf("DMX receiver started\r\n");
 		printf("DMX receiver started\r\n"); //+h24
 
@@ -51,9 +56,11 @@ void core_process(void)
 	led_set(0, curve_fn(packet[1]));
 	led_set(1, curve_fn(packet[2]));
 
+/*-h24
 	if ((adc[0] < ADC_MAX) && (adc[1] < ADC_MAX))
 		usb_dumppacket(packet, len);
 	else
-		usb_printf("DMX.Len=%d ADC1=%d ADC2=%d\r\n",
-			   len, adc[0], adc[1]);
+//-h24		usb_printf("DMX.Len=%d ADC1=%d ADC2=%d\r\n", len, adc[0], adc[1]);
+		printf("DMX.Len=%d ADC1=%d ADC2=%d\r\n", len, adc[0], adc[1]);
+*/
 }

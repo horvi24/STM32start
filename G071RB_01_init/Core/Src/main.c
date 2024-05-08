@@ -22,6 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "dbg.h"
 
 /* USER CODE END Includes */
 
@@ -142,6 +143,8 @@ int main(void) {
 	printf("UART1 250kbps RS485\r\n");
 	printf("UART2 250kbps VCP debug port\r\n");
 	printf("TIM3 4xPWM@1kHz CH1-PB4, CH2-PA7, CH3-PB0 ,CH4-PB1\r\n");
+
+	test();
 
 	/* USER CODE END 2 */
 

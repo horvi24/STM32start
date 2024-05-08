@@ -1,6 +1,6 @@
 #include "led.h"
 
-static TIM_HandleTypeDef *ledtim;
+static TIM_HandleTypeDef *htim3;
 
 void led_set(uint8_t led, uint16_t value)
 {
@@ -12,12 +12,12 @@ void led_set(uint8_t led, uint16_t value)
 	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
 
 	if (led == 0) {
-		HAL_TIM_PWM_ConfigChannel(ledtim, &sConfigOC, TIM_CHANNEL_1);
-		HAL_TIM_PWM_Start(ledtim, TIM_CHANNEL_1);
+		HAL_TIM_PWM_ConfigChannel(htim3, &sConfigOC, TIM_CHANNEL_1);
+		HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_1);
 	}
 	if (led == 1) {
-		HAL_TIM_PWM_ConfigChannel(ledtim, &sConfigOC, TIM_CHANNEL_2);
-		HAL_TIM_PWM_Start(ledtim, TIM_CHANNEL_2);
+		HAL_TIM_PWM_ConfigChannel(htim3, &sConfigOC, TIM_CHANNEL_2);
+		HAL_TIM_PWM_Start(htim3, TIM_CHANNEL_2);
 	}
 }
 
@@ -25,7 +25,7 @@ bool led_init(TIM_HandleTypeDef *htim)
 {
 	TIM_OC_InitTypeDef sConfigOC;
 
-	ledtim = htim;
+	htim3 = htim;
 
 	sConfigOC.OCMode = TIM_OCMODE_PWM1;
 	sConfigOC.Pulse = 666;
