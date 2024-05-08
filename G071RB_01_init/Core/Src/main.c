@@ -125,7 +125,7 @@ int main(void) {
 	pwmR = 0;
 	pwmG = 580;
 	pwmB = 900;
-	pwmB = 0;
+	pwmW = 0;
 
 	TIM3->CCR1 = pwmR;
 	TIM3->CCR2 = pwmG;
@@ -144,7 +144,7 @@ int main(void) {
 	printf("UART2 250kbps VCP debug port\r\n");
 	printf("TIM3 4xPWM@1kHz CH1-PB4, CH2-PA7, CH3-PB0 ,CH4-PB1\r\n");
 
-	test();
+	dbg_test();
 
 	/* USER CODE END 2 */
 
@@ -154,25 +154,20 @@ int main(void) {
 		//HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
 		//HAL_Delay(500);
 
-		if (pwmR == 0)
-			stepR = 10;
-		if (pwmR == 1000)
-			stepR = -10;
+		if (pwmR == 0)     stepR = 10;
+		if (pwmR == 1000)  stepR = -10;
 		pwmR += stepR;
-		if (pwmG == 0)
-			stepG = 20;
-		if (pwmG == 1000)
-			stepG = -20;
+
+		if (pwmG == 0)     stepG = 20;
+		if (pwmG == 1000)  stepG = -20;
 		pwmG += stepG;
-		if (pwmB == 0)
-			stepB = 40;
-		if (pwmB == 1000)
-			stepB = -40;
+
+		if (pwmB == 0)     stepB = 40;
+		if (pwmB == 1000)  stepB = -40;
 		pwmB += stepB;
-		if (pwmW == 0)
-			stepB = 5;
-		if (pwmW == 1000)
-			stepB = -5;
+
+		if (pwmW == 0)     stepW = 5;
+		if (pwmW == 1000)  stepW = -5;
 		pwmW += stepW;
 
 		TIM3->CCR1 = pwmR;

@@ -14,7 +14,7 @@
 #define ADC_MAX 		1800
 
 //-h24 extern ADC_HandleTypeDef hadc1;
-extern TIM_HandleTypeDef htim4;
+extern TIM_HandleTypeDef htim3;
 
 static uint8_t packet[576];
 static uint16_t adc[ADC_CHANNELS];
@@ -39,7 +39,7 @@ bool core_init(void)
 	if (!led_init(&htim4));
 		return false;
 */
-	if (!led_init(&htim4))	//+h24
+	if (!led_init(&htim3))	//+h24
 		return false;
 //-h24	usb_printf("DMX receiver started\r\n");
 		printf("DMX receiver started\r\n"); //+h24
@@ -55,7 +55,8 @@ void core_process(void)
 
 	led_set(0, curve_fn(packet[1]));
 	led_set(1, curve_fn(packet[2]));
-
+	led_set(2, curve_fn(packet[3]));
+	led_set(3, curve_fn(packet[4]));
 /*-h24
 	if ((adc[0] < ADC_MAX) && (adc[1] < ADC_MAX))
 		usb_dumppacket(packet, len);
