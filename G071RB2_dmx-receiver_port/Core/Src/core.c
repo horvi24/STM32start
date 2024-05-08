@@ -50,6 +50,8 @@ bool core_init(void)
 void core_process(void)
 {
 	uint16_t len;
+    printf("dmx_receive...\r\n"); //+h24
+
 
 	len = dmx_receive(packet);
 
@@ -62,6 +64,7 @@ void core_process(void)
 		usb_dumppacket(packet, len);
 	else
 //-h24		usb_printf("DMX.Len=%d ADC1=%d ADC2=%d\r\n", len, adc[0], adc[1]);
-		printf("DMX.Len=%d ADC1=%d ADC2=%d\r\n", len, adc[0], adc[1]);
-*/
+ */
+    printf("DMX.Len=%d ADC1=%d ADC2=%d\r\n", len, adc[0], adc[1]);
+
 }

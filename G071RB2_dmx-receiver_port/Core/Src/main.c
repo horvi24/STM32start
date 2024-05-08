@@ -125,10 +125,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    printf("core_processs()...\r\n"); //+h24
+    core_process();
     /* USER CODE END WHILE */
-	    core_process();
 
     /* USER CODE BEGIN 3 */
+
   }
   /* USER CODE END 3 */
 }
@@ -239,6 +241,24 @@ static void MX_TIM1_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN TIM1_Init 2 */
+  __HAL_TIM_ENABLE_IT(&htim1, TIM_IT_UPDATE);
+
+   TIM_CCxChannelCmd(htim1.Instance, TIM_CHANNEL_1, TIM_CCx_ENABLE);
+   TIM_CCxChannelCmd(htim1.Instance, TIM_CHANNEL_2, TIM_CCx_ENABLE);
+
+   __HAL_TIM_DISABLE_IT(&htim1, TIM_IT_CC1);
+   __HAL_TIM_DISABLE_IT(&htim1, TIM_IT_CC2);
+
+   __HAL_TIM_CLEAR_FLAG(&htim1, TIM_IT_CC1);
+   __HAL_TIM_CLEAR_FLAG(&htim1, TIM_IT_CC2);
+
+   __HAL_TIM_ENABLE(&htim1);
+/*-h24
+   HAL_NVIC_SetPriority(TIM2_IRQn, 0, 0);
+   HAL_NVIC_EnableIRQ(TIM2_IRQn);
+*/
+   HAL_NVIC_SetPriority(TIM1_CC_IRQn, 0, 0);
+   HAL_NVIC_EnableIRQ(TIM1_CC_IRQn);
 
   /* USER CODE END TIM1_Init 2 */
 
@@ -333,7 +353,7 @@ static void MX_USART1_UART_Init(void)
   huart1.Instance = USART1;
   huart1.Init.BaudRate = 250000;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
-  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.StopBits = UART_STOPBITS_2;
   huart1.Init.Parity = UART_PARITY_NONE;
   huart1.Init.Mode = UART_MODE_TX_RX;
   huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
@@ -358,6 +378,8 @@ static void MX_USART1_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART1_Init 2 */
+  __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+   __HAL_UART_ENABLE_IT(&huart1, UART_IT_ERR);
 
   /* USER CODE END USART1_Init 2 */
 
@@ -441,7 +463,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pin = LED_GREEN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_GREEN_GPIO_Port, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */

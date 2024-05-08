@@ -2,6 +2,8 @@
 #define CORE_H
 
 #include <stdbool.h>
+#include <stdio.h>
+
 
 #define CORE_TIMER_CLOCK	 48000000
 #define CORE_PWM_FREQUENCY	 1200
