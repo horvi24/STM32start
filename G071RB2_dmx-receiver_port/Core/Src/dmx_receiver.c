@@ -1,6 +1,8 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "main.h" //+h24
+
 #include "stm32g0xx_hal.h"
 #include "stm32g0xx_hal_tim.h"
 #include "stm32g0xx_hal_uart.h"
@@ -136,6 +138,8 @@ static void rising_edge(void)
 	/* Disable rising edge interrupt */
 	__HAL_TIM_DISABLE_IT(&htim1, TIM_FLAG_CC2);
 
+//	HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET); //+h24
+
 	/* No Breaks received yet, it is first */
 	if (InitBreakFlag == 0)
 	{
@@ -175,6 +179,10 @@ static void falling_edge(void)
 	NetCounter = (Counter3 - Counter2) & TIMER_PERIOD;
 	/* Total time */
 	NetCounter += (OverflowCount - MABOverflowCount) * TIMER_PERIOD;
+
+
+	//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET); //+h24
+
 
 	/* Return if correct Break was not detected previously */
 	if (BreakFlag == 0)
@@ -263,6 +271,9 @@ void dmx_uart_handler(UART_HandleTypeDef *huart)
 //-h24	uint32_t Data = huart->Instance->DR;
 	uint32_t Data = huart->Instance->RDR;		//+h24
 
+	//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET); //+h24
+
+
 	/* Frame Error interrupt happens after 10 bits of 0 (~40us), so it is
 	 * after first 40 us of Break */
 	if ((StatusRead & UART_FLAG_FE) == UART_FLAG_FE) {
@@ -285,6 +296,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
+
+	HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET); //+h24
+
   if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
 	falling_edge();
   else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)

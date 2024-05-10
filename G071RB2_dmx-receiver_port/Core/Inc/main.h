@@ -77,6 +77,10 @@ void Error_Handler(void);
 #define PWM_B_GPIO_Port GPIOB
 #define PWM_W_Pin GPIO_PIN_1
 #define PWM_W_GPIO_Port GPIOB
+#define DBG_OUT2_Pin GPIO_PIN_8
+#define DBG_OUT2_GPIO_Port GPIOD
+#define DBG_OUT1_Pin GPIO_PIN_9
+#define DBG_OUT1_GPIO_Port GPIOD
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
