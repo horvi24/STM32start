@@ -15,6 +15,7 @@ void dbg_test();
 
 /*
 void usb_printf(char *fmt, ...);
-void usb_dumppacket(uint8_t *src_packet, uint16_t len);
 */
+void usb_dumppacket(uint8_t *src_packet, uint16_t len);
+
 #endif		/* DBG_H */

@@ -66,6 +66,7 @@ void core_process(void)
 //-h24		usb_printf("DMX.Len=%d ADC1=%d ADC2=%d\r\n", len, adc[0], adc[1]);
  */
 	if(!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin))
-      printf("/%3d/ %3d %3d %3d %3d\r\n", len, packet[1], packet[2], packet[3], packet[4]);
+      //printf("/%3d/ %3d %3d %3d %3d\r\n", len, packet[1], packet[2], packet[3], packet[4]);
+	  usb_dumppacket(packet, len);
 
 }
