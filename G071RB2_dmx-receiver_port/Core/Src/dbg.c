@@ -4,6 +4,7 @@
 
 #include <dbg.h>
 //#include "usbd_cdc_if.h"
+#include "stm32g0xx_hal.h"
 
 static char usb_buf[512];
 
@@ -47,7 +48,8 @@ void usb_dumppacket(uint8_t *src_packet, uint16_t len)
 		if (to_send > 500)
 		{
 			//CDC_Transmit_FS((uint8_t*)usb_buf, to_send);
-			HAL_UART_Transmit(&huart2, (uint8_t *)usb_buf, to_send, 0xFFFF);
+			//HAL_UART_Transmit(&huart2, (uint8_t *)usb_buf, to_send, 0xFFFF);
+			printf(usb_buf);
 			ptr = usb_buf;
 		}
 	}
@@ -56,7 +58,8 @@ void usb_dumppacket(uint8_t *src_packet, uint16_t len)
 
 	to_send = ptr - usb_buf;
 	//CDC_Transmit_FS((uint8_t*)usb_buf, to_send);
-	HAL_UART_Transmit(&huart2, (uint8_t *)usb_buf, to_send, 0xFFFF);
+	//HAL_UART_Transmit(&huart2, (uint8_t *)usb_buf, to_send, 0xFFFF);
+	printf(usb_buf);
 
 }
 

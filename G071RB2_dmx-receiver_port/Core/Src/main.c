@@ -22,8 +22,10 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "core.h"
-#include "curve.h"
-#include "led.h"
+//#include "curve.h"
+//#include "led.h"
+
+
 
 //#include "usb_device.h"
 /* USER CODE END Includes */
