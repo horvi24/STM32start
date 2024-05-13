@@ -42,7 +42,7 @@ bool core_init(void)
 	if (!led_init(&htim3))	//+h24
 		return false;
 //-h24	usb_printf("DMX receiver started\r\n");
-		printf("DMX receiver started\r\n"); //+h24
+		printf("DMX receiver started...\r\n"); //+h24
 
 	return true;
 }
@@ -50,7 +50,7 @@ bool core_init(void)
 void core_process(void)
 {
 	uint16_t len;
-    printf("dmx_receive...\r\n"); //+h24
+    //printf("dmx_receive...\r\n"); //+h24
 
 
 	len = dmx_receive(packet);
@@ -65,6 +65,7 @@ void core_process(void)
 	else
 //-h24		usb_printf("DMX.Len=%d ADC1=%d ADC2=%d\r\n", len, adc[0], adc[1]);
  */
-    printf("DMX.Len=%d ADC1=%d ADC2=%d\r\n", len, adc[0], adc[1]);
+	if(!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin))
+      printf("/%3d/ %3d %3d %3d %3d\r\n", len, packet[1], packet[2], packet[3], packet[4]);
 
 }

@@ -75,7 +75,7 @@ static void first_break_rising(uint32_t OverflowCount)
 
 		/* Enable falling edge interrupt */
 		__HAL_TIM_ENABLE_IT(&htim1, TIM_IT_CC1);
-
+//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET); //+h24
 		/* Remember overflows at start of MAB */
 		MABOverflowCount = OverflowCount;
 	}
@@ -138,7 +138,7 @@ static void rising_edge(void)
 	/* Disable rising edge interrupt */
 	__HAL_TIM_DISABLE_IT(&htim1, TIM_FLAG_CC2);
 
-//	HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET); //+h24
+//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET); //+h24
 
 	/* No Breaks received yet, it is first */
 	if (InitBreakFlag == 0)
@@ -181,8 +181,7 @@ static void falling_edge(void)
 	NetCounter += (OverflowCount - MABOverflowCount) * TIMER_PERIOD;
 
 
-	//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET); //+h24
-
+	HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET); //+h24
 
 	/* Return if correct Break was not detected previously */
 	if (BreakFlag == 0)
@@ -192,6 +191,8 @@ static void falling_edge(void)
 		/* Got correct MAB, ready to receive slots */
 		MABFlag = 1;
 		BreakFlag = 0;
+
+
 	}
 	else {
 		/* Too short MAB, so clear and wait for new Break (UART FE) */
@@ -199,6 +200,7 @@ static void falling_edge(void)
 		BreakFlag = 0;
 		InitBreakFlag = 0;
 	}
+
 }
 
 /* Frame Error is detected by UART after 10bits of low level. So it is Break */
@@ -297,10 +299,18 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
 
-	HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET); //+h24
 
-  if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
-	falling_edge();
-  else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)
-	rising_edge();
+  if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1){
+		HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET); //+h24
+		falling_edge();
+
+  }
+  else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2){
+	  	//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET); //+h24
+		rising_edge();
+
+  }
+
+  //HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET); //+h24
+
 }
