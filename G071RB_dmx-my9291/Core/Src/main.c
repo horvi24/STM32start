@@ -37,6 +37,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+//my92xx _my92xx = my92xx(MY92XX_MODEL, MY92XX_CHIPS, MY92XX_DI_PIN, MY92XX_DCKI_PIN, MY92XX_COMMAND_DEFAULT);
 
 /* USER CODE END PD */
 
@@ -85,6 +86,27 @@ PUTCHAR_PROTOTYPE
   return ch;
 }
 
+
+void rainbow(unsigned char index) {
+
+    if (index < 85) {
+        my92xx_setChannel(MY92XX_RED, index * 3);
+        my92xx_setChannel(MY92XX_GREEN, 255 - index * 3);
+        my92xx_setChannel(MY92XX_BLUE, 0);
+    } else if (index < 170) {
+        index -= 85;
+        my92xx_setChannel(MY92XX_RED, 255 - index * 3);
+        my92xx_setChannel(MY92XX_GREEN, 0);
+        my92xx_setChannel(MY92XX_BLUE, index * 3);
+    } else {
+        index -= 170;
+        my92xx_setChannel(MY92XX_RED, 0);
+        my92xx_setChannel(MY92XX_GREEN, index * 3);
+        my92xx_setChannel(MY92XX_BLUE, 255 - index * 3);
+    }
+    my92xx_update();
+
+}
 /* USER CODE END 0 */
 
 /**
@@ -124,7 +146,14 @@ int main(void)
   if (!core_init())
     Error_Handler();
 
+
+
   printf("\r\nDMX512-MY9291 receiver b0.1 (14/05/24)\r\n"); //+h24
+  my92xx_init(MY92XX_MODEL, MY92XX_CHIPS, MY92XX_COMMAND_DEFAULT);
+  my92xx_setState(true);
+
+  //rainbow(10);
+
 
 /*
     uint8_t tmpR=0;
@@ -148,7 +177,17 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    core_process();
+      static unsigned char count = 0;
+      rainbow(count++);
+      HAL_Delay(100);
+
+
+    //core_process();
+
+
+
+
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

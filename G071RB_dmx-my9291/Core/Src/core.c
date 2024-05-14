@@ -2,13 +2,6 @@
 #include "main.h"
 
 #include "core.h"
-#include "curve.h"
-#include "adc.h"
-#include "dmx_receiver.h"
-#include "led.h"
-#include "my9291.h"
-//-h24 #include "usb_debug.h"
-#include "dbg.h" //+h24
 
 #define ADC_CHANNELS 		2
 #define ADC_MAX 		1800
