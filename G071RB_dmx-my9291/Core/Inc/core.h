@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdint.h>
+
 
 
 #define CORE_TIMER_CLOCK	 48000000

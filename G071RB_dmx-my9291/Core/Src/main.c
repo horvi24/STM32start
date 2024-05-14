@@ -126,8 +126,6 @@ int main(void)
 
   printf("\r\nDMX512-MY9291 receiver b0.1 (14/05/24)\r\n"); //+h24
 
-
-  //HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET); //+h24
 /*
     uint8_t tmpR=0;
     uint8_t tmpG=0;

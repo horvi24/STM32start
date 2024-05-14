@@ -1,4 +1,3 @@
-#include <stdint.h>
 
 #include "main.h"
 
@@ -7,6 +6,7 @@
 #include "adc.h"
 #include "dmx_receiver.h"
 #include "led.h"
+#include "my9291.h"
 //-h24 #include "usb_debug.h"
 #include "dbg.h" //+h24
 
