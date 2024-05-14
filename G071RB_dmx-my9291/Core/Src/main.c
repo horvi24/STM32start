@@ -124,6 +124,8 @@ int main(void)
   if (!core_init())
     Error_Handler();
 
+  printf("\r\nDMX512-MY9291 receiver b0.1 (14/05/24)\r\n"); //+h24
+
 
   //HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET); //+h24
 /*
@@ -148,8 +150,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	printf("\r\nDMX512-RGBWpwm receiver (14/05/24) b0.2\r\n"); //+h24
-
     core_process();
     /* USER CODE END WHILE */
 
