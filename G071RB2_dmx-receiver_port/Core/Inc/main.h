@@ -85,6 +85,10 @@ void Error_Handler(void);
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
 #define TCK_GPIO_Port GPIOA
+#define LED_DCKI_Pin GPIO_PIN_3
+#define LED_DCKI_GPIO_Port GPIOB
+#define LED_DI_Pin GPIO_PIN_5
+#define LED_DI_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
