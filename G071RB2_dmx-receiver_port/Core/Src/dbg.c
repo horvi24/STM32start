@@ -6,33 +6,15 @@
 //#include "usbd_cdc_if.h"
 #include "stm32g0xx_hal.h"
 
-static char usb_buf[512];
+static char dbg_buf[512];
 
 void dbg_test(){
 	printf("printf test\r\n");
 }
 
-
-/*
-static char usb_buf[512];
-
-void usb_printf(char *fmt, ...)
+void dbg_dumppacket(uint8_t *src_packet, uint16_t len)
 {
-	uint16_t len;
-	va_list ap;
-
-	va_start(ap, fmt);
-	vsprintf(usb_buf, fmt, ap);
-	va_end(ap);
-
-	len = strlen(usb_buf);
-
-	CDC_Transmit_FS((uint8_t*)usb_buf, len);
-}
-*/
-void usb_dumppacket(uint8_t *src_packet, uint16_t len)
-{
-	char *ptr = usb_buf;
+	char *ptr = dbg_buf;
 	uint16_t to_send;
 
 	ptr += sprintf(ptr, "[%lu] Dumping packet (type=%02X len=%d):",
@@ -44,22 +26,18 @@ void usb_dumppacket(uint8_t *src_packet, uint16_t len)
 
 		ptr += sprintf(ptr, "%02X ", src_packet[i]);
 
-		to_send = ptr - usb_buf;
+		to_send = ptr - dbg_buf;
 		if (to_send > 500)
 		{
-			//CDC_Transmit_FS((uint8_t*)usb_buf, to_send);
-			//HAL_UART_Transmit(&huart2, (uint8_t *)usb_buf, to_send, 0xFFFF);
-			printf(usb_buf);
-			ptr = usb_buf;
+			printf(dbg_buf);
+			ptr = dbg_buf;
 		}
 	}
 
 	ptr += sprintf(ptr, "\r\n");
 
-	to_send = ptr - usb_buf;
-	//CDC_Transmit_FS((uint8_t*)usb_buf, to_send);
-	//HAL_UART_Transmit(&huart2, (uint8_t *)usb_buf, to_send, 0xFFFF);
-	printf(usb_buf);
+	to_send = ptr - dbg_buf;
+	printf(dbg_buf);
 
 }
 

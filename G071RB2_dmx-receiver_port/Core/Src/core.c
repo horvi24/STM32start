@@ -19,6 +19,7 @@
 extern TIM_HandleTypeDef htim3;
 
 static uint8_t packet[576];
+/*
 static uint16_t adc[ADC_CHANNELS];
 
 static void process_adc(uint16_t *data)
@@ -30,21 +31,17 @@ static void process_adc(uint16_t *data)
 	for (ch = 0; ch < ADC_CHANNELS; ch++)
 		adc[ch] = data[ch];
 }
-
+*/
 bool core_init(void)
 {
 /*-h24
 	if (!adc_init(&hadc1, ADC_CHANNELS, process_adc))
 		return false;
 */
-/*-h24
-	if (!led_init(&htim4));
-		return false;
-*/
 	if (!led_init(&htim3))	//+h24
 		return false;
-//-h24	usb_printf("DMX receiver started\r\n");
-		printf("DMX receiver started...\r\n"); //+h24
+
+	printf("DMX receiver started...\r\n"); //+h24
 
 	return true;
 }
@@ -52,8 +49,6 @@ bool core_init(void)
 void core_process(void)
 {
 	uint16_t len;
-    //printf("dmx_receive...\r\n"); //+h24
-
 
 	len = dmx_receive(packet);
 
@@ -69,7 +64,7 @@ void core_process(void)
  */
 	if(!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)){
 	      printf("/%3d/ %3d %3d %3d %3d\r\n", ADDR_LED_RGBW, packet[ADDR_LED_RGBW], packet[ADDR_LED_RGBW+1], packet[ADDR_LED_RGBW+2], packet[ADDR_LED_RGBW+3]);
-		  usb_dumppacket(packet, len);
+		  dbg_dumppacket(packet, len);
 
 	}
 
