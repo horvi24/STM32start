@@ -41,8 +41,6 @@ bool core_init(void)
 	if (!led_init(&htim3))	//+h24
 		return false;
 
-	printf("DMX receiver started...\r\n"); //+h24
-
 	return true;
 }
 
