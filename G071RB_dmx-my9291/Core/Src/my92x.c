@@ -70,7 +70,7 @@ void my92xx_write(uint16_t data, uint8_t bit_length) {
 	printf("%d", (data & mask) ? 1 : 0);
 #endif
 		//digitalWrite(_pin_dcki, LOW);
-				HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_RESET);
 		//digitalWrite(_pin_di, LOW);
 		HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
 		data = data << 1;
@@ -80,6 +80,10 @@ void my92xx_write(uint16_t data, uint8_t bit_length) {
 #endif
 }
 
+
+
+
+
 void my92xx_set_cmd(uint8_t command) {
 
 #ifdef DEBUG_MY92XX
@@ -88,16 +92,19 @@ void my92xx_set_cmd(uint8_t command) {
 
 	// ets_intr_lock();
 
-	// TStop > 12us.
+	HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
+    // TStop > 12us.
 	my92xx_dly_us(DLY_12US);
+    HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
 
 	// Send 12 DI pulse, after 6 pulse's falling edge store duty data, and 12
 	// pulse's rising edge convert to command mode.
 	my92xx_di_pulse(12);
 
+    HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
 	// Delay >12us, begin send CMD data
-	///os_delay_us(12);
 	my92xx_dly_us(DLY_12US);
+    HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
 
 	// Send CMD data
 	uint8_t command_data = *(uint8_t*) (&command);
@@ -105,17 +112,17 @@ void my92xx_set_cmd(uint8_t command) {
 		my92xx_write(command_data, 8);
 	}
 
+	HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
 	// TStart > 12us. Delay 12 us.
 	///os_delay_us(12);
 	my92xx_dly_us(DLY_12US);
+    HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
 
 	// Send 16 DI pulse，at 14 pulse's falling edge store CMD data, and
 	// at 16 pulse's falling edge convert to duty mode.
-	///_di_pulse(16);
 	my92xx_di_pulse(16);
 
 	// TStop > 12us.
-	///os_delay_us(12);
 	my92xx_dly_us(DLY_12US);
 
 	// ets_intr_unlock();
@@ -145,7 +152,7 @@ void my92xx_send() {
 		break;
 	}
 */
-	_channels = 16;
+	_channels = 4;
 #ifdef DEBUG_MY92XX
 	printf("[MY92XX] Send...\r\n");
 	printf("_chanels   = %d\r\n", _channels);
@@ -194,48 +201,6 @@ void my92xx_send() {
 
 	// ets_intr_unlock();
 }
-
-void my92xx_send_tst() {
-	uint8_t tmp = 50;
-
-	for (uint8_t channel = 0; channel < 16; channel++) {
-		value[channel] = tmp;
-		tmp += 10;
-	}
-
-
-
-	#ifdef DEBUG_MY92XX
-	printf("[MY92XX] Test: %s (", _state ? "ON" : "OFF");
-	for (uint8_t channel = 0; channel < 16; channel++) {
-		printf(" %d", value[channel]);
-	}
-	printf(" )\r\n");
-	#endif
-
-	uint8_t bit_length = 8;
-
-	// ets_intr_lock();
-
-	// TStop > 12us.
-	my92xx_dly_us(DLY_12US);
-
-	// Send color data
-	for (uint8_t channel = 0; channel < 16; channel++) {
-		my92xx_write(_state ? value[channel] : 0, bit_length);
-	}
-
-	// TStart > 12us. Ready for send DI pulse.
-	my92xx_dly_us(DLY_12US);
-
-	// Send 8 DI pulse. After 8 pulse falling edge, store old data.
-	my92xx_di_pulse(8);
-
-	// TStop > 12us.
-	my92xx_dly_us(DLY_12US);
-
-	// ets_intr_unlock();
-}
 // -----------------------------------------------------------------------------
 
 unsigned char my92xx_getChannels() {
@@ -264,17 +229,8 @@ _state = state;
 }
 
 void my92xx_update() {
-/*
-	printf("_channels   = %d\r\n", _channels);
-	printf("[update] %s (", _state ? "ON" : "OFF");
-	for (uint8_t channel = 0; channel < _channels; channel++) {
-		printf(" %d", value[channel]);
-	}
-	printf(" )\r\n");
-*/
 
 my92xx_send();
-//my92xx_send_tst();
 }
 
 // -----------------------------------------------------------------------------
@@ -323,23 +279,21 @@ if (_value == NULL) {
 	printf(" )\r\n");
 #endif
 
-// Init GPIO
-//pinMode(_pin_di, OUTPUT);
-//pinMode(_pin_dcki, OUTPUT);
 
-//digitalWrite(_pin_di, LOW);
 HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
-//digitalWrite(_pin_dcki, LOW);
 HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_RESET);
 //varjanta  HAL_GPIO_WritePin(GPIOB, LED_DCKI_Pin|LED_DI_Pin, GPIO_PIN_RESET);
 
+HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
+
 // Clear all duty register
-my92xx_dcki_pulse(32 * _chips);
+my92xx_dcki_pulse(32 * _chips); //64*N/2 pulses after poweron
+HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
 
 // Send init command
 my92xx_set_cmd(command);
 
 //DEBUG_MSG_MY92XX("[MY92XX] Initialized\n");
-printf("[MY92XX] Initialized\r\n");
+//printf("[MY92XX] Initialized\r\n");
 
 }

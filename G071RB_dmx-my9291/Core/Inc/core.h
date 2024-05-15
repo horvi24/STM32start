@@ -27,6 +27,7 @@
 #define ADDR_LED_RGBW_PWM	1
 #define ADDR_LED_RGBW_MY92	1
 
+#define LED_RGBW_MY92_ON    24
 
 
 #define MY92XX_MODEL        MY92XX_MODEL_MY9291

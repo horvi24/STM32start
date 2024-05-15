@@ -139,6 +139,30 @@ void RGBW(uint8_t cnt) {
 	my92xx_update();
 
 }
+void RGBW1(uint8_t cnt) {
+
+    for(uint8_t i=0; i<4; i++) my92xx_setChannel(i, 0);
+
+    switch (cnt) {
+    case 0:
+        my92xx_setChannel(MY92XX_R1, LED_RGBW_MY92_ON);
+        break;
+    case 1:
+        my92xx_setChannel(MY92XX_G1, LED_RGBW_MY92_ON);
+        break;
+    case 2:
+        my92xx_setChannel(MY92XX_B3, LED_RGBW_MY92_ON);
+        break;
+    case 3:
+        my92xx_setChannel(MY92XX_W4, LED_RGBW_MY92_ON);
+        break;
+    default:
+        break;
+    }
+
+    my92xx_update();
+
+}
 
 /* USER CODE END 0 */
 
@@ -147,6 +171,7 @@ void RGBW(uint8_t cnt) {
  * @retval int
  */
 int main(void) {
+    uint8_t i = 0;
 
 	/* USER CODE BEGIN 1 */
 
@@ -180,7 +205,7 @@ int main(void) {
 
 	printf("\r\nDMX512-MY9291 receiver b0.1 (14/05/24)\r\n"); //+h24
 
-
+/*
 	 HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_SET);
 	 HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
 	 HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_SET);
@@ -208,9 +233,9 @@ int main(void) {
 	 HAL_GPIO_TogglePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin);
 	 HAL_GPIO_TogglePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin);
 	 HAL_GPIO_TogglePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin);
-
-	 //my92xx_init(MY92XX_MODEL, MY92XX_CHIPS, MY92XX_COMMAND_DEFAULT);
-	//my92xx_setState(true);
+*/
+	 my92xx_init(MY92XX_MODEL, MY92XX_CHIPS, MY92XX_COMMAND_DEFAULT);
+	 my92xx_setState(true);
 
 	//rainbow(10);
 	//RGBW();
@@ -236,12 +261,11 @@ int main(void) {
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
 	while (1) {
-		uint8_t i = 0;
-/*
-		RGBW(i++);
+
+		RGBW1(i++);
 		i = (i < 4) ? i : 0;
 		HAL_Delay(1000);
-*/
+
 		/*
 		 static unsigned char count = 0;
 		 rainbow(count++);

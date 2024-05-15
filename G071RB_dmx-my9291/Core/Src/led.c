@@ -36,8 +36,8 @@ bool led_init(TIM_HandleTypeDef *htim)
 	htim3 = htim;
 
 	sConfigOC.OCMode = TIM_OCMODE_PWM1;
-	sConfigOC.Pulse = 666;
-	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+	sConfigOC.Pulse = 24;
+	sConfigOC.OCPolarity = TIM_OCPOLARITY_LOW;
 	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
 
 	HAL_TIM_PWM_ConfigChannel(htim, &sConfigOC, TIM_CHANNEL_1);

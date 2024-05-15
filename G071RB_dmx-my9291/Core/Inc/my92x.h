@@ -4,12 +4,12 @@
 //#include <stdint.h>
 #include <core.h>
 
-#define DLY_8US   16
+//#define DLY_8US   16+2
 #define DLY_12US  26
-#define DLY_16US  36
+//#define DLY_16US  36+2
 
 
-#define DEBUG_MY92XX
+//#define DEBUG_MY92XX
 
 // Define constants for the model types
 #define MY92XX_MODEL_MY9291 0x00
@@ -37,6 +37,14 @@
 
                             //   76543210
 #define MY92XX_COMMAND_DEFAULT 0b00011000
+                            // CMD[7] 0 ...temp
+                            // CMD[6] 0 ...onest    MY92XX_CMD_ONE_SHOT_DISABLE
+                            // CMD[5] 0 ...hspdb    MY92XX_CMD_REACTION_FAST
+                            // CMD[4] 1 ...bs1
+                            // CMD[3] 1 ...bs0      MY92XX_CMD_BIT_WIDTH_8
+                            // CMD[2] 0 ...gck1
+                            // CMD[1] 0 ...gck0     MY92XX_CMD_FREQUENCY_DIVIDE_1
+                            // CMD[0] 0 ...sepb     MY92XX_CMD_SCATTER_APDM
 
 
 // Define the structure to hold the my92xx command
@@ -75,8 +83,6 @@ void my92xx_update();
 
 void my92xx_set_cmd(uint8_t command);
 void my92xx_send();
-void my92xx_send_tst();
-
 
 void my92xx_init(uint8_t model, uint8_t chips, uint8_t command);
 
