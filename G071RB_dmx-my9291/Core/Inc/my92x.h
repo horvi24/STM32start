@@ -9,7 +9,7 @@
 #define DLY_16US  36
 
 
-//#define DEBUG_MY92XX
+#define DEBUG_MY92XX
 
 // Define constants for the model types
 #define MY92XX_MODEL_MY9291 0x00

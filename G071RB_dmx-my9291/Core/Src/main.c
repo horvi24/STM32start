@@ -149,6 +149,14 @@ int main(void)
 
 
   printf("\r\nDMX512-MY9291 receiver b0.1 (14/05/24)\r\n"); //+h24
+
+/*
+  HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_SET);
+  my92xx_dly_us(DLY_12US);
+  HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_RESET);
+*/
   my92xx_init(MY92XX_MODEL, MY92XX_CHIPS, MY92XX_COMMAND_DEFAULT);
   my92xx_setState(true);
 
