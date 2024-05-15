@@ -231,7 +231,7 @@ int main(void) {
 
 		RGBW(i++);
 		i = (i < 4) ? i : 0;
-		HAL_Delay(10);
+		HAL_Delay(100);
 
 		/*
 		 static unsigned char count = 0;
