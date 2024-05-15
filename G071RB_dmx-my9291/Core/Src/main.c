@@ -109,28 +109,28 @@ void RGBW(uint8_t cnt) {
 
 	switch (cnt) {
 	case 0:
-		my92xx_setChannel(MY92XX_R1, 255);
-		my92xx_setChannel(MY92XX_G2, 255);
-		my92xx_setChannel(MY92XX_B3, 255);
-		my92xx_setChannel(MY92XX_W4, 255);
+		my92xx_setChannel(MY92XX_R1, LED_RGBW_MY92_ON);
+		my92xx_setChannel(MY92XX_G2, LED_RGBW_MY92_ON);
+		my92xx_setChannel(MY92XX_B3, LED_RGBW_MY92_ON);
+		my92xx_setChannel(MY92XX_W4, LED_RGBW_MY92_ON);
 		break;
 	case 1:
-		my92xx_setChannel(MY92XX_R2, 255);
-		my92xx_setChannel(MY92XX_G3, 255);
-		my92xx_setChannel(MY92XX_B4, 255);
-		my92xx_setChannel(MY92XX_W1, 255);
+		my92xx_setChannel(MY92XX_R2, LED_RGBW_MY92_ON);
+		my92xx_setChannel(MY92XX_G3, LED_RGBW_MY92_ON);
+		my92xx_setChannel(MY92XX_B4, LED_RGBW_MY92_ON);
+		my92xx_setChannel(MY92XX_W1, LED_RGBW_MY92_ON);
 		break;
 	case 2:
-		my92xx_setChannel(MY92XX_R3, 255);
-		my92xx_setChannel(MY92XX_G4, 255);
-		my92xx_setChannel(MY92XX_B1, 255);
-		my92xx_setChannel(MY92XX_W2, 255);
+		my92xx_setChannel(MY92XX_R3, LED_RGBW_MY92_ON);
+		my92xx_setChannel(MY92XX_G4, LED_RGBW_MY92_ON);
+		my92xx_setChannel(MY92XX_B1, LED_RGBW_MY92_ON);
+		my92xx_setChannel(MY92XX_W2, LED_RGBW_MY92_ON);
 		break;
 	case 3:
-		my92xx_setChannel(MY92XX_R4, 255);
-		my92xx_setChannel(MY92XX_G1, 255);
-		my92xx_setChannel(MY92XX_B2, 255);
-		my92xx_setChannel(MY92XX_W3, 255);
+		my92xx_setChannel(MY92XX_R4, LED_RGBW_MY92_ON);
+		my92xx_setChannel(MY92XX_G1, LED_RGBW_MY92_ON);
+		my92xx_setChannel(MY92XX_B2, LED_RGBW_MY92_ON);
+		my92xx_setChannel(MY92XX_W3, LED_RGBW_MY92_ON);
 		break;
 	default:
 		break;
@@ -151,16 +151,16 @@ void RGBW1(uint8_t cnt) {
         my92xx_setChannel(MY92XX_G1, LED_RGBW_MY92_ON);
         break;
     case 2:
-        my92xx_setChannel(MY92XX_B3, LED_RGBW_MY92_ON);
+        my92xx_setChannel(MY92XX_B1, LED_RGBW_MY92_ON);
         break;
     case 3:
-        my92xx_setChannel(MY92XX_W4, LED_RGBW_MY92_ON);
+        my92xx_setChannel(MY92XX_W1, LED_RGBW_MY92_ON);
         break;
     default:
         break;
     }
 
-    my92xx_update();
+     my92xx_update();
 
 }
 
@@ -205,41 +205,8 @@ int main(void) {
 
 	printf("\r\nDMX512-MY9291 receiver b0.1 (14/05/24)\r\n"); //+h24
 
-/*
-	 HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_SET);
-	 HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
-	 HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_SET);
-	 HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
-	 HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_SET);
-	 HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
-
-	 HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_SET);
-	 HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_RESET);
-	 HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_SET);
-	 HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_RESET);
-	 HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_SET);
-	 HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_RESET);
-
-	 HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_SET);
-	 HAL_GPIO_TogglePin(LED_DI_GPIO_Port, LED_DI_Pin);
-	 HAL_GPIO_TogglePin(LED_DI_GPIO_Port, LED_DI_Pin);
-	 HAL_GPIO_TogglePin(LED_DI_GPIO_Port, LED_DI_Pin);
-	 HAL_GPIO_TogglePin(LED_DI_GPIO_Port, LED_DI_Pin);
-	 HAL_GPIO_TogglePin(LED_DI_GPIO_Port, LED_DI_Pin);
-
-	 HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_SET);
-	 HAL_GPIO_TogglePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin);
-	 HAL_GPIO_TogglePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin);
-	 HAL_GPIO_TogglePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin);
-	 HAL_GPIO_TogglePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin);
-	 HAL_GPIO_TogglePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin);
-*/
 	 my92xx_init(MY92XX_MODEL, MY92XX_CHIPS, MY92XX_COMMAND_DEFAULT);
 	 my92xx_setState(true);
-
-	//rainbow(10);
-	//RGBW();
-	//HAL_Delay(3000);
 
 	/*
 	 uint8_t tmpR=0;
@@ -262,9 +229,9 @@ int main(void) {
 	/* USER CODE BEGIN WHILE */
 	while (1) {
 
-		RGBW1(i++);
+		RGBW(i++);
 		i = (i < 4) ? i : 0;
-		HAL_Delay(1000);
+		HAL_Delay(10);
 
 		/*
 		 static unsigned char count = 0;

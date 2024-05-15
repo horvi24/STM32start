@@ -92,19 +92,19 @@ void my92xx_set_cmd(uint8_t command) {
 
 	// ets_intr_lock();
 
-	HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
+	//HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
     // TStop > 12us.
 	my92xx_dly_us(DLY_12US);
-    HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
+    //HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
 
 	// Send 12 DI pulse, after 6 pulse's falling edge store duty data, and 12
 	// pulse's rising edge convert to command mode.
 	my92xx_di_pulse(12);
 
-    HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
+    //HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
 	// Delay >12us, begin send CMD data
 	my92xx_dly_us(DLY_12US);
-    HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
+    //HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
 
 	// Send CMD data
 	uint8_t command_data = *(uint8_t*) (&command);
@@ -112,11 +112,11 @@ void my92xx_set_cmd(uint8_t command) {
 		my92xx_write(command_data, 8);
 	}
 
-	HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
+	//HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
 	// TStart > 12us. Delay 12 us.
 	///os_delay_us(12);
 	my92xx_dly_us(DLY_12US);
-    HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
+    //HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
 
 	// Send 16 DI pulse，at 14 pulse's falling edge store CMD data, and
 	// at 16 pulse's falling edge convert to duty mode.
@@ -152,7 +152,7 @@ void my92xx_send() {
 		break;
 	}
 */
-	_channels = 4;
+	_channels = 16;
 #ifdef DEBUG_MY92XX
 	printf("[MY92XX] Send...\r\n");
 	printf("_chanels   = %d\r\n", _channels);
@@ -178,11 +178,13 @@ void my92xx_send() {
 
 	// ets_intr_lock();
 
+    HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
 	// TStop > 12us.
 	//os_delay_us(12);
 	my92xx_dly_us(DLY_12US);
 
-	// Send color data
+    // Send color data
 	for (uint8_t channel = 0; channel < _channels; channel++) {
 		my92xx_write(_state ? value[channel] : 0, bit_length);
 	}
@@ -194,6 +196,7 @@ void my92xx_send() {
 	// Send 8 DI pulse. After 8 pulse falling edge, store old data.
 	//_di_pulse(8);
 	my92xx_di_pulse(8);
+
 
 	// TStop > 12us.
 	//os_delay_us(12);
@@ -284,11 +287,10 @@ HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
 HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_RESET);
 //varjanta  HAL_GPIO_WritePin(GPIOB, LED_DCKI_Pin|LED_DI_Pin, GPIO_PIN_RESET);
 
-HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
-
+//HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
 // Clear all duty register
 my92xx_dcki_pulse(32 * _chips); //64*N/2 pulses after poweron
-HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
+//HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
 
 // Send init command
 my92xx_set_cmd(command);

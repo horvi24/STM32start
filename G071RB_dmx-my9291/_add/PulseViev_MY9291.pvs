@@ -65,7 +65,7 @@ decoder0\id=counter
 decoder0\visible=true
 decoder0\options=7
 decoder0\option0\name=data_edge
-decoder0\option0\value=@ByteArray(rising\0)
+decoder0\option0\value=@ByteArray(any\0)
 decoder0\option0\type=s
 decoder0\option1\name=dead_cycles
 decoder0\option1\value=@ByteArray(\0\0\0\0\0\0\0\0)
@@ -318,11 +318,11 @@ views=1
 meta_objs=1
 
 [view0]
-scale=4.4492841532821745e-7
-v_offset=-42
+scale=5.6154537286612755e-5
+v_offset=-173
 splitter_state=@ByteArray(\0\0\0\xff\0\0\0\x1\0\0\0\x2\0\0\0z\0\0\x4\xd3\x1\0\0\0\x1\x1\0\0\0\x1\0)
 segment_display_mode=3
-offset=22 serialization::archive 14 0 0 0 0 9928 7356757 86892032 9837141 68650025 62577694 -8 0 0 6
+offset=22 serialization::archive 14 0 0 0 0 0 0 0 0 0 0 0 0 0 6
 zero_offset=22 serialization::archive 14 0 0 0 0 0 0 0 0 0 0 0 0 0 6
 D0\trace_height=26
 D1\trace_height=26
