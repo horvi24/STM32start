@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include "main.h"
 #include "curve.h"
 #include "adc.h"
@@ -23,18 +24,34 @@
 #define CORE_PWM_TIMER_PRESCALER (-1 + CORE_TIMER_CLOCK / \
 				 (CORE_PWM_FREQUENCY * (CORE_PWM_TIMER_PERIOD + 1)))
 
+#define ADDR_LED_RGBW_PWM	1
+#define ADDR_LED_RGBW_MY92	1
+
+
 
 #define MY92XX_MODEL        MY92XX_MODEL_MY9291
-#define MY92XX_CHIPS        4
+#define MY92XX_CHIPS        1
 //#define MY92XX_DI_PIN       13
 //#define MY92XX_DCKI_PIN     15
 
-#define MY92XX_RED          0
-#define MY92XX_GREEN        1
-#define MY92XX_BLUE         2
-#define MY92XX_WHITE        4
+#define MY92XX_R1		0
+#define MY92XX_G1       1
+#define MY92XX_B1       2
+#define MY92XX_W1       3
+#define MY92XX_R2		4
+#define MY92XX_G2       5
+#define MY92XX_B2       6
+#define MY92XX_W2       7
+#define MY92XX_R3		8
+#define MY92XX_G3       9
+#define MY92XX_B3       10
+#define MY92XX_W3       11
+#define MY92XX_R4		12
+#define MY92XX_G4       13
+#define MY92XX_B4       14
+#define MY92XX_W4       15
 
-#define RAINBOW_DELAY       10
+#define RAINBOW_DELAY   10
 
 
 

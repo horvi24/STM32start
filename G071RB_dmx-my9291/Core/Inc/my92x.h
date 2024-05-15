@@ -67,7 +67,7 @@ void my92xx_write(uint16_t data, uint8_t bit_length);
 
 
 uint8_t my92xx_getChannels();
-void my92xx_setChannel(uint8_t channel, uint16_t value);
+void my92xx_setChannel(uint8_t channel, uint16_t val);
 uint16_t my92xx_getChannel(uint8_t channel);
 void my92xx_setState(bool state);
 bool my92xx_getState();
@@ -75,6 +75,8 @@ void my92xx_update();
 
 void my92xx_set_cmd(uint8_t command);
 void my92xx_send();
+void my92xx_send_tst();
+
 
 void my92xx_init(uint8_t model, uint8_t chips, uint8_t command);
 

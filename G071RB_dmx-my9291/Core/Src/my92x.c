@@ -2,240 +2,344 @@
 
 //https://github.com/xoseperez/my92xx/blob/master/src/my92xx.cpp
 /*
-    my92xx_model_t model = MY92XX_MODEL;
-    uint8_t chips = MY92XX_CHIPS;
-    uint8_t di_pin = MY92XX_DI_PIN;
-    uint8_t dcki_pin = MY92XX_DCKI_PIN;
-    uint8_t value[MY92XX_CHIPS * 4]; // Assuming 4 channels per chip for MY9291
-    uint8_t channels = MY92XX_CHIPS * 4;
-    my92xx_cmd_t command = MY92XX_COMMAND_DEFAULT;
-*/
+ my92xx_model_t model = MY92XX_MODEL;
+ uint8_t chips = MY92XX_CHIPS;
+ uint8_t di_pin = MY92XX_DI_PIN;
+ uint8_t dcki_pin = MY92XX_DCKI_PIN;
+ uint8_t value[MY92XX_CHIPS * 4]; // Assuming 4 channels per chip for MY9291
+ uint8_t channels = MY92XX_CHIPS * 4;
+ my92xx_cmd_t command = MY92XX_COMMAND_DEFAULT;
+ */
 /*
-    uint8_t _pin_di;
-    uint8_t _pin_dcki;
-*/
+ uint8_t _pin_di;
+ uint8_t _pin_dcki;
+ */
 bool _state = false;
 my92xx_cmd_t _command;
 uint16_t *_value;
 uint8_t _channels;
 uint8_t _model = MY92XX_MODEL_MY9291;
-uint8_t _chips = 1;
+uint8_t _chips = MY92XX_CHIPS;
 
-uint8_t value[MY92XX_CHIPS * 4]; // Assuming 4 channels per chip for MY9291
+uint16_t value[MY92XX_CHIPS * 4]; // Assuming 4 channels per chip for MY9291
 
 void my92xx_dly_us(uint16_t time) {             // 16=8.3us, 26=12.2us 36=16.2us
-    for (uint16_t i = 0; i < time; i++) {       // DLY_8US,  DLY_12US, DLY_16US
-        asm("NOP");
-    }
+	for (uint16_t i = 0; i < time; i++) {       // DLY_8US,  DLY_12US, DLY_16US
+		asm("NOP");
+	}
 }
 
 void my92xx_di_pulse(uint16_t times) {
-    for (uint16_t i = 0; i < times; i++) {
-        //digitalWrite(_pin_di, HIGH);
-        //digitalWrite(_pin_di, LOW);
-        HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
-    }
+	for (uint16_t i = 0; i < times; i++) {
+		//digitalWrite(_pin_di, HIGH);
+		//digitalWrite(_pin_di, LOW);
+		HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
+	}
 }
 
 void my92xx_dcki_pulse(uint16_t times) {
-    for (uint16_t i = 0; i < times; i++) {
-        //digitalWrite(_pin_dcki, HIGH);
-        //digitalWrite(_pin_dcki, LOW);
-        HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_RESET);
-    }
+	for (uint16_t i = 0; i < times; i++) {
+		//digitalWrite(_pin_dcki, HIGH);
+		//digitalWrite(_pin_dcki, LOW);
+		HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_RESET);
+	}
 }
 
 void my92xx_write(uint16_t data, uint8_t bit_length) {
 
-    uint16_t mask = (0x01 << (bit_length - 1));
+	uint16_t mask = (0x01 << (bit_length - 1));
 
-    for (uint16_t i = 0; i < bit_length / 2; i++) {
-        //digitalWrite(_pin_dcki, LOW);
-        HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_RESET);
-        //digitalWrite(_pin_di, (data & mask) ? HIGH : LOW);
-        HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin,
-                (data & mask) ? GPIO_PIN_SET : GPIO_PIN_RESET);
-        //digitalWrite(_pin_dcki, HIGH);
-        HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_SET);
-        data = data << 1;
+	for (uint16_t i = 0; i < bit_length / 2; i++) {
+		//digitalWrite(_pin_dcki, LOW);
+		HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_RESET);
+		//digitalWrite(_pin_di, (data & mask) ? HIGH : LOW);
+		HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin,	(data & mask) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+#ifdef DEBUG_MY92XX
+	printf("%d", (data & mask) ? 1 : 0);
+#endif
+		//digitalWrite(_pin_dcki, HIGH);
+		HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_SET);
+		data = data << 1;
 
-        //digitalWrite(_pin_di, (data & mask) ? HIGH : LOW);
-        HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin,
-                (data & mask) ? GPIO_PIN_SET : GPIO_PIN_RESET);
-        //digitalWrite(_pin_dcki, LOW);
-        HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_RESET);
-        //digitalWrite(_pin_di, LOW);
-        HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
-        data = data << 1;
-    }
-
+		//digitalWrite(_pin_di, (data & mask) ? HIGH : LOW);
+		HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin,
+				(data & mask) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+#ifdef DEBUG_MY92XX
+	printf("%d", (data & mask) ? 1 : 0);
+#endif
+		//digitalWrite(_pin_dcki, LOW);
+				HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_RESET);
+		//digitalWrite(_pin_di, LOW);
+		HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
+		data = data << 1;
+	}
+#ifdef DEBUG_MY92XX
+	printf("\r\n");
+#endif
 }
 
 void my92xx_set_cmd(uint8_t command) {
 
-    // ets_intr_lock();
+#ifdef DEBUG_MY92XX
+	printf("[MY92XX] Command: 0x%X \r\n", command);
+#endif
 
-    // TStop > 12us.
-    ///os_delay_us(12);
-    my92xx_dly_us(DLY_12US);
+	// ets_intr_lock();
 
-    // Send 12 DI pulse, after 6 pulse's falling edge store duty data, and 12
-    // pulse's rising edge convert to command mode.
-    ///_di_pulse(12);
-    my92xx_di_pulse(12);
+	// TStop > 12us.
+	my92xx_dly_us(DLY_12US);
 
-    // Delay >12us, begin send CMD data
-    ///os_delay_us(12);
-    my92xx_dly_us(DLY_12US);
+	// Send 12 DI pulse, after 6 pulse's falling edge store duty data, and 12
+	// pulse's rising edge convert to command mode.
+	my92xx_di_pulse(12);
 
-    // Send CMD data
-    uint8_t command_data = *(uint8_t*) (&command);
-    for (uint8_t i = 0; i < _chips; i++) {
-        my92xx_write(command_data, 8);
-    }
+	// Delay >12us, begin send CMD data
+	///os_delay_us(12);
+	my92xx_dly_us(DLY_12US);
 
-    // TStart > 12us. Delay 12 us.
-    ///os_delay_us(12);
-    my92xx_dly_us(DLY_12US);
+	// Send CMD data
+	uint8_t command_data = *(uint8_t*) (&command);
+	for (uint8_t i = 0; i < _chips; i++) {
+		my92xx_write(command_data, 8);
+	}
 
-    // Send 16 DI pulse，at 14 pulse's falling edge store CMD data, and
-    // at 16 pulse's falling edge convert to duty mode.
-    ///_di_pulse(16);
-    my92xx_di_pulse(16);
+	// TStart > 12us. Delay 12 us.
+	///os_delay_us(12);
+	my92xx_dly_us(DLY_12US);
 
-    // TStop > 12us.
-    ///os_delay_us(12);
-    my92xx_dly_us(DLY_12US);
+	// Send 16 DI pulse，at 14 pulse's falling edge store CMD data, and
+	// at 16 pulse's falling edge convert to duty mode.
+	///_di_pulse(16);
+	my92xx_di_pulse(16);
 
-    // ets_intr_unlock();
+	// TStop > 12us.
+	///os_delay_us(12);
+	my92xx_dly_us(DLY_12US);
+
+	// ets_intr_unlock();
 
 }
 
 void my92xx_send() {
+	uint8_t bit_length = 8;
+	/*
+	uint8_t bit_width = MY92XX_CMD_BIT_WIDTH_8;
 
+	switch (bit_width) {
+	case MY92XX_CMD_BIT_WIDTH_16:
+		bit_length = 16;
+		break;
+	case MY92XX_CMD_BIT_WIDTH_14:
+		bit_length = 14;
+		break;
+	case MY92XX_CMD_BIT_WIDTH_12:
+		bit_length = 12;
+		break;
+	case MY92XX_CMD_BIT_WIDTH_8:
+		bit_length = 8;
+		break;
+	default:
+		bit_length = 8;
+		break;
+	}
+*/
+	_channels = 16;
 #ifdef DEBUG_MY92XX
-        printf("[MY92XX] Refresh: %s (", _state ? "ON" : "OFF");
-        for (uint8_t channel = 0; channel < _channels; channel++) {
-            //DEBUG_MSG_MY92XX(" %d", _value[channel]);
-            printf(" %d", _value[channel]);
-        }
-        //DEBUG_MSG_MY92XX(" )\r\n");
-        printf(" )\r\n");
+	printf("[MY92XX] Send...\r\n");
+	printf("_chanels   = %d\r\n", _channels);
+	printf("bit_length = %d\r\n", bit_length);
+
+	printf("[MY92XX] Send: %s (", _state ? "ON" : "OFF");
+	for (uint8_t channel = 0; channel < _channels; channel++) {
+		printf(" %d", value[channel]);
+	}
+	printf(" )\r\n");
 #endif
+/*
+#ifdef DEBUG_MY92XX
+	printf("[MY92XX] Refresh: %s (", _state ? "ON" : "OFF");
+	for (uint8_t channel = 0; channel < _channels; channel++) {
+		//DEBUG_MSG_MY92XX(" %d", _value[channel]);
+		printf(" %d", _value[channel]);
+	}
+	//DEBUG_MSG_MY92XX(" )\r\n");
+	printf(" )\r\n");
+#endif
+*/
 
-    uint8_t bit_length = 8;
-    switch (_command.bit_width) {
-        case MY92XX_CMD_BIT_WIDTH_16:
-            bit_length = 16;
-            break;
-        case MY92XX_CMD_BIT_WIDTH_14:
-            bit_length = 14;
-            break;
-        case MY92XX_CMD_BIT_WIDTH_12:
-            bit_length = 12;
-            break;
-        case MY92XX_CMD_BIT_WIDTH_8:
-            bit_length = 8;
-            break;
-        default:
-            bit_length = 8;
-            break;
-    }
+	// ets_intr_lock();
 
-    // ets_intr_lock();
+	// TStop > 12us.
+	//os_delay_us(12);
+	my92xx_dly_us(DLY_12US);
 
-    // TStop > 12us.
-    //os_delay_us(12);
-    my92xx_dly_us(DLY_12US);
+	// Send color data
+	for (uint8_t channel = 0; channel < _channels; channel++) {
+		my92xx_write(_state ? value[channel] : 0, bit_length);
+	}
 
-    // Send color data
-    for (uint8_t channel = 0; channel < _channels; channel++) {
-        my92xx_write(_state ? _value[channel] : 0, bit_length);
-    }
+	// TStart > 12us. Ready for send DI pulse.
+	//os_delay_us(12);
+	my92xx_dly_us(DLY_12US);
 
-    // TStart > 12us. Ready for send DI pulse.
-    //os_delay_us(12);
-    my92xx_dly_us(DLY_12US);
+	// Send 8 DI pulse. After 8 pulse falling edge, store old data.
+	//_di_pulse(8);
+	my92xx_di_pulse(8);
 
-    // Send 8 DI pulse. After 8 pulse falling edge, store old data.
-    //_di_pulse(8);
-    my92xx_di_pulse(8);
+	// TStop > 12us.
+	//os_delay_us(12);
+	my92xx_dly_us(DLY_12US);
 
-    // TStop > 12us.
-    //os_delay_us(12);
-    my92xx_dly_us(DLY_12US);
-
-    // ets_intr_unlock();
+	// ets_intr_unlock();
 }
 
+void my92xx_send_tst() {
+	uint8_t tmp = 50;
+
+	for (uint8_t channel = 0; channel < 16; channel++) {
+		value[channel] = tmp;
+		tmp += 10;
+	}
+
+
+
+	#ifdef DEBUG_MY92XX
+	printf("[MY92XX] Test: %s (", _state ? "ON" : "OFF");
+	for (uint8_t channel = 0; channel < 16; channel++) {
+		printf(" %d", value[channel]);
+	}
+	printf(" )\r\n");
+	#endif
+
+	uint8_t bit_length = 8;
+
+	// ets_intr_lock();
+
+	// TStop > 12us.
+	my92xx_dly_us(DLY_12US);
+
+	// Send color data
+	for (uint8_t channel = 0; channel < 16; channel++) {
+		my92xx_write(_state ? value[channel] : 0, bit_length);
+	}
+
+	// TStart > 12us. Ready for send DI pulse.
+	my92xx_dly_us(DLY_12US);
+
+	// Send 8 DI pulse. After 8 pulse falling edge, store old data.
+	my92xx_di_pulse(8);
+
+	// TStop > 12us.
+	my92xx_dly_us(DLY_12US);
+
+	// ets_intr_unlock();
+}
 // -----------------------------------------------------------------------------
 
 unsigned char my92xx_getChannels() {
-    return _channels;
+return _channels;
 }
 
-void my92xx_setChannel(uint8_t channel, uint16_t value) {
-    if (channel < _channels) {
-        _value[channel] = value;
-    }
+void my92xx_setChannel(uint8_t channel, uint16_t val) {
+if (channel < _channels) {
+	value[channel] = val;
+}
 }
 
 uint16_t my92xx_getChannel(uint8_t channel) {
-    if (channel < _channels) {
-        return _value[channel];
-    }
-    return 0;
+if (channel < _channels) {
+	return value[channel];
+}
+return 0;
 }
 
 bool my92xx_getState() {
-    return _state;
+return _state;
 }
 
 void my92xx_setState(bool state) {
-    _state = state;
+_state = state;
 }
 
 void my92xx_update() {
-    my92xx_send();
+/*
+	printf("_channels   = %d\r\n", _channels);
+	printf("[update] %s (", _state ? "ON" : "OFF");
+	for (uint8_t channel = 0; channel < _channels; channel++) {
+		printf(" %d", value[channel]);
+	}
+	printf(" )\r\n");
+*/
+
+my92xx_send();
+//my92xx_send_tst();
 }
 
 // -----------------------------------------------------------------------------
 
-
 void my92xx_init(uint8_t model, uint8_t chips, uint8_t command) {
-    uint8_t _channels;
-    _model = model;
-    _chips = chips;
+//uint8_t _channels;
+_model = model;
+_chips = chips;
 
-    if (_model == MY92XX_MODEL_MY9291) {
-        _channels = 4 * _chips;
-    } else if (_model == MY92XX_MODEL_MY9231) {
-        _channels = 3 * _chips;
+if (_model == MY92XX_MODEL_MY9291) {
+	_channels = 4 * _chips;
+} else if (_model == MY92XX_MODEL_MY9231) {
+	_channels = 3 * _chips;
+}
+/*
+_value = (uint16_t*) malloc(_channels * sizeof(uint16_t));
+
+if (_value == NULL) {
+        printf("Memory allocation failed\r\n");
+    } else {
+        // Memory allocation succeeded
+    	//printf("_value = ");
+  	    for (uint8_t i = 0; i < _channels; i++) {
+            _value[i] = i;
+            //printf(" [%d]%d", i, _value[i]);
+        }
+  	    //printf("\r\n");
     }
+*/
+  for (uint8_t i = 0; i < _channels; i++) {
+    value[i] = 0;
+  }
 
-    for (uint8_t i = 0; i < _channels; i++) {
-        value[i] = 0;
-    }
 
-    // Init GPIO
-    //pinMode(_pin_di, OUTPUT);
-    //pinMode(_pin_dcki, OUTPUT);
+#ifdef DEBUG_MY92XX
+	printf("[MY92XX] Init...\r\n");
+	printf("_model   = %d\r\n", _model);
+	printf("_chips   = %d\r\n", _chips);
+	printf("_chanels = %d\r\n", _channels);
+	printf("command  = %X\r\n", command);
 
-    //digitalWrite(_pin_di, LOW);
-    HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
-    //digitalWrite(_pin_dcki, LOW);
-    HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_RESET);
-    //varjanta  HAL_GPIO_WritePin(GPIOB, LED_DCKI_Pin|LED_DI_Pin, GPIO_PIN_RESET);
+	printf("[MY92XX] Init: %s (", _state ? "ON" : "OFF");
+	for (uint8_t channel = 0; channel < _channels; channel++) {
+		printf(" %d", value[channel]);
+	}
+	printf(" )\r\n");
+#endif
 
-    // Clear all duty register
-    my92xx_dcki_pulse(32 * _chips);
+// Init GPIO
+//pinMode(_pin_di, OUTPUT);
+//pinMode(_pin_dcki, OUTPUT);
 
-    // Send init command
-    my92xx_set_cmd(command);
+//digitalWrite(_pin_di, LOW);
+HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
+//digitalWrite(_pin_dcki, LOW);
+HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_RESET);
+//varjanta  HAL_GPIO_WritePin(GPIOB, LED_DCKI_Pin|LED_DI_Pin, GPIO_PIN_RESET);
 
-    //DEBUG_MSG_MY92XX("[MY92XX] Initialized\n");
-    printf("[MY92XX] Initialized\n");
+// Clear all duty register
+my92xx_dcki_pulse(32 * _chips);
+
+// Send init command
+my92xx_set_cmd(command);
+
+//DEBUG_MSG_MY92XX("[MY92XX] Initialized\n");
+printf("[MY92XX] Initialized\r\n");
 
 }

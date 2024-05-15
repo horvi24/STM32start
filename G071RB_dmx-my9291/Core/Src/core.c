@@ -43,10 +43,35 @@ void core_process(void)
 
 	len = dmx_receive(packet);
 
-	led_set(0, curve_fn(packet[ADDR_LED_RGBW]));
-	led_set(1, curve_fn(packet[ADDR_LED_RGBW+1]));
-	led_set(2, curve_fn(packet[ADDR_LED_RGBW+2]));
-	led_set(3, curve_fn(packet[ADDR_LED_RGBW+3]));
+	led_set(0, curve_fn(packet[ADDR_LED_RGBW_PWM]));
+	led_set(1, curve_fn(packet[ADDR_LED_RGBW_PWM+1]));
+	led_set(2, curve_fn(packet[ADDR_LED_RGBW_PWM+2]));
+	led_set(3, curve_fn(packet[ADDR_LED_RGBW_PWM+3]));
+
+	 my92xx_setChannel(MY92XX_R1, packet[ADDR_LED_RGBW_MY92]);
+	 my92xx_setChannel(MY92XX_G1, packet[ADDR_LED_RGBW_MY92]+1);
+	 my92xx_setChannel(MY92XX_B1, packet[ADDR_LED_RGBW_MY92]+2);
+	 my92xx_setChannel(MY92XX_W1, packet[ADDR_LED_RGBW_MY92]+3);
+
+	 my92xx_setChannel(MY92XX_R2, packet[ADDR_LED_RGBW_MY92]+4);
+	 my92xx_setChannel(MY92XX_G2, packet[ADDR_LED_RGBW_MY92]+5);
+	 my92xx_setChannel(MY92XX_B2, packet[ADDR_LED_RGBW_MY92]+6);
+	 my92xx_setChannel(MY92XX_W2, packet[ADDR_LED_RGBW_MY92]+7);
+
+	 my92xx_setChannel(MY92XX_R3, packet[ADDR_LED_RGBW_MY92]+8);
+	 my92xx_setChannel(MY92XX_G3, packet[ADDR_LED_RGBW_MY92]+9);
+	 my92xx_setChannel(MY92XX_B3, packet[ADDR_LED_RGBW_MY92]+10);
+	 my92xx_setChannel(MY92XX_W3, packet[ADDR_LED_RGBW_MY92]+11);
+
+	 my92xx_setChannel(MY92XX_R4, packet[ADDR_LED_RGBW_MY92]+12);
+	 my92xx_setChannel(MY92XX_G4, packet[ADDR_LED_RGBW_MY92]+13);
+	 my92xx_setChannel(MY92XX_B4, packet[ADDR_LED_RGBW_MY92]+14);
+	 my92xx_setChannel(MY92XX_W4, packet[ADDR_LED_RGBW_MY92]+15);
+
+	 my92xx_update();
+
+
+
 /*-h24
 	if ((adc[0] < ADC_MAX) && (adc[1] < ADC_MAX))
 		usb_dumppacket(packet, len);
