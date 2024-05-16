@@ -5,7 +5,7 @@
 #include <core.h>
 
 //#define DLY_8US   16+2
-#define DLY_12US  26
+#define DLY_12US  30//26
 //#define DLY_16US  36+2
 
 
@@ -73,6 +73,8 @@ void my92xx_dly_us(uint16_t time);              //16=8.3us 26=12.2us 36=16.2us
 void my92xx_di_pulse(uint16_t times);
 void my92xx_dcki_pulse(uint16_t times);
 void my92xx_write(uint16_t data, uint8_t bit_length);
+
+void my92xx_write_h24(uint16_t data, uint8_t bit_length);
 
 
 uint8_t my92xx_getChannels();

@@ -243,14 +243,6 @@ int main(void) {
 	while (1) {
 
 
-		if (!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)) {
-
-			HAL_Delay(200);
-			while(!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)){};
-			HAL_Delay(200);
-			i++;
-			printf("slope(%3d)\r\n", i); //+h24
-		}
 
 
 
@@ -266,6 +258,15 @@ int main(void) {
 		my92xx_setChannel(MY92XX_R3, i);
 		my92xx_setChannel(MY92XX_R4, i);
 		my92xx_update();
+
+        if (!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)) {
+
+            HAL_Delay(200);
+            while(!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)){};
+            HAL_Delay(200);
+            i++;
+            printf("slope(%3d)\r\n", i); //+h24
+        }
 
 		//HAL_Delay(500);
 /*

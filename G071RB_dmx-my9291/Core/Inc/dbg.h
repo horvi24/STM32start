@@ -12,6 +12,7 @@
 #define DEBUG_DMX_DBG1
 //#define DEBUG_MY92XX_DBG2
 #define DEBUG_CORE_DBG2
+#define DEBUG_MY92XX_DBG2_INIT
 
 
 void dbg_test();
