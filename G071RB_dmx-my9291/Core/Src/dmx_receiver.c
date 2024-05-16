@@ -1,3 +1,6 @@
+//https://github.com/aleksandrgilfanov/stm32-dmx-receiver
+
+/*
 #include <stdbool.h>
 #include <string.h>
 
@@ -8,9 +11,9 @@
 #include "stm32g0xx_hal_uart.h"
 
 #include "dmx_receiver.h"
+*/
+#include "core.h" //+h24
 
-#define TIMER_PERIOD 	0xFFFF
-#define DMX_MAX_SLOTS 	512
 
 extern TIM_HandleTypeDef htim1;
 
@@ -35,13 +38,19 @@ static uint8_t DataCorruptFlag;
 /* Packet byte counter, used while receiving is still in process */
 static uint16_t DMXChannelCount;
 
-/* DMX Packet buffer with one byte for first 0x00 */
+
+// DMX Packet buffer with one byte for first 0x00
 static uint8_t Packet[DMX_MAX_SLOTS + 1];
-/* Flag that indicates succesfully received packet */
+// Flag that indicates succesfully received packet
 static uint8_t PacketFlag;
-/* Length of received packet */
+// Length of received packet
 static uint16_t PacketLength;
 
+/*
+extern uint8_t Packet[DMX_MAX_SLOTS + 1];
+extern uint8_t PacketFlag;
+extern uint16_t PacketLength;
+*/
 /* Blocking receive entire DMX packet */
 uint16_t dmx_receive(uint8_t* dest)
 {
@@ -55,6 +64,22 @@ uint16_t dmx_receive(uint8_t* dest)
 
 	return len;
 }
+
+uint16_t dmx_receive_24(uint8_t* dest)
+{
+	uint16_t len;
+
+	if (PacketFlag == 0) {
+		return 0;
+	}
+	else{
+		len = PacketLength;
+		memcpy(dest, Packet, len);
+		PacketFlag = 0;
+		return len;
+	}
+}
+
 
 static void first_break_rising(uint32_t OverflowCount)
 {
@@ -181,7 +206,6 @@ static void falling_edge(void)
 	NetCounter += (OverflowCount - MABOverflowCount) * TIMER_PERIOD;
 
 
-	HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET); //+h24
 
 	/* Return if correct Break was not detected previously */
 	if (BreakFlag == 0)
@@ -301,8 +325,14 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 
 
   if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1){
+#ifdef DEBUG_DMX_DBG1
 		HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET); //+h24
+#endif
 		falling_edge();
+#ifdef DEBUG_DMX_DBG1
+		HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET); //+h24
+#endif
+
 
   }
   else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2){

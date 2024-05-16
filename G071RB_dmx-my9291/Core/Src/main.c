@@ -49,6 +49,14 @@ TIM_HandleTypeDef htim3;
 
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
+/*
+ // DMX Packet buffer with one byte for first 0x00
+ static uint8_t Packet[DMX_MAX_SLOTS + 1];
+ // Flag that indicates succesfully received packet
+ static uint8_t PacketFlag;
+ // Length of received packet
+ static uint16_t PacketLength;
+ */
 
 /* USER CODE BEGIN PV */
 
@@ -105,11 +113,12 @@ void rainbow(unsigned char index) {
 
 void RGBW(uint8_t cnt) {
 
-	for(uint8_t i=0; i<16; i++) my92xx_setChannel(i, 0);
+	for (uint8_t i = 4; i < 16; i++)
+		my92xx_setChannel(i, 0);
 
 	switch (cnt) {
 	case 0:
-		my92xx_setChannel(MY92XX_R1, LED_RGBW_MY92_ON);
+		//my92xx_setChannel(MY92XX_R1, LED_RGBW_MY92_ON);
 		my92xx_setChannel(MY92XX_G2, LED_RGBW_MY92_ON);
 		my92xx_setChannel(MY92XX_B3, LED_RGBW_MY92_ON);
 		my92xx_setChannel(MY92XX_W4, LED_RGBW_MY92_ON);
@@ -118,17 +127,17 @@ void RGBW(uint8_t cnt) {
 		my92xx_setChannel(MY92XX_R2, LED_RGBW_MY92_ON);
 		my92xx_setChannel(MY92XX_G3, LED_RGBW_MY92_ON);
 		my92xx_setChannel(MY92XX_B4, LED_RGBW_MY92_ON);
-		my92xx_setChannel(MY92XX_W1, LED_RGBW_MY92_ON);
+		//my92xx_setChannel(MY92XX_W1, LED_RGBW_MY92_ON);
 		break;
 	case 2:
 		my92xx_setChannel(MY92XX_R3, LED_RGBW_MY92_ON);
 		my92xx_setChannel(MY92XX_G4, LED_RGBW_MY92_ON);
-		my92xx_setChannel(MY92XX_B1, LED_RGBW_MY92_ON);
+		//my92xx_setChannel(MY92XX_B1, LED_RGBW_MY92_ON);
 		my92xx_setChannel(MY92XX_W2, LED_RGBW_MY92_ON);
 		break;
 	case 3:
 		my92xx_setChannel(MY92XX_R4, LED_RGBW_MY92_ON);
-		my92xx_setChannel(MY92XX_G1, LED_RGBW_MY92_ON);
+		//my92xx_setChannel(MY92XX_G1, LED_RGBW_MY92_ON);
 		my92xx_setChannel(MY92XX_B2, LED_RGBW_MY92_ON);
 		my92xx_setChannel(MY92XX_W3, LED_RGBW_MY92_ON);
 		break;
@@ -141,26 +150,27 @@ void RGBW(uint8_t cnt) {
 }
 void RGBW1(uint8_t cnt) {
 
-    for(uint8_t i=0; i<4; i++) my92xx_setChannel(i, 0);
+	for (uint8_t i = 0; i < 4; i++)
+		my92xx_setChannel(i, 0);
 
-    switch (cnt) {
-    case 0:
-        my92xx_setChannel(MY92XX_R1, LED_RGBW_MY92_ON);
-        break;
-    case 1:
-        my92xx_setChannel(MY92XX_G1, LED_RGBW_MY92_ON);
-        break;
-    case 2:
-        my92xx_setChannel(MY92XX_B1, LED_RGBW_MY92_ON);
-        break;
-    case 3:
-        my92xx_setChannel(MY92XX_W1, LED_RGBW_MY92_ON);
-        break;
-    default:
-        break;
-    }
+	switch (cnt) {
+	case 0:
+		my92xx_setChannel(MY92XX_R1, LED_RGBW_MY92_ON);
+		break;
+	case 1:
+		my92xx_setChannel(MY92XX_G1, LED_RGBW_MY92_ON);
+		break;
+	case 2:
+		my92xx_setChannel(MY92XX_B1, LED_RGBW_MY92_ON);
+		break;
+	case 3:
+		my92xx_setChannel(MY92XX_W1, LED_RGBW_MY92_ON);
+		break;
+	default:
+		break;
+	}
 
-     my92xx_update();
+	my92xx_update();
 
 }
 
@@ -171,9 +181,8 @@ void RGBW1(uint8_t cnt) {
  * @retval int
  */
 int main(void) {
-    uint8_t i = 0;
-
 	/* USER CODE BEGIN 1 */
+	uint8_t i = 0, up = 1;
 
 	/* USER CODE END 1 */
 
@@ -205,40 +214,84 @@ int main(void) {
 
 	printf("\r\nDMX512-MY9291 receiver b0.1 (14/05/24)\r\n"); //+h24
 
-	 my92xx_init(MY92XX_MODEL, MY92XX_CHIPS, MY92XX_COMMAND_DEFAULT);
-	 my92xx_setState(true);
-
-	/*
-	 uint8_t tmpR=0;
-	 uint8_t tmpG=0;
-	 uint8_t tmpB=0;
-	 uint8_t tmpW=255;
-
-	 led_set(0, curve_fn(tmpR));
-	 led_set(1, curve_fn(tmpG));
-	 led_set(2, curve_fn(tmpB));
-	 led_set(3, curve_fn(tmpW));
-
-	 printf("/fix  / %d %d %d %d\r\n", tmpR, tmpG, tmpB, tmpW);
-	 printf("/curve/ %d %d %d %d\r\n", curve_fn(tmpR), curve_fn(tmpG), curve_fn(tmpB), curve_fn(tmpW));
-	 */
+	my92xx_init(MY92XX_MODEL, MY92XX_CHIPS, MY92XX_COMMAND_DEFAULT);
+	my92xx_setState(true);
 
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
+	led_set(MY92XX_B1,0);
+
+	my92xx_setChannel(MY92XX_R1, 0);
+	my92xx_setChannel(MY92XX_G2, 0);
+	my92xx_setChannel(MY92XX_B3, 0);
+	my92xx_setChannel(MY92XX_W4, 0);
+	my92xx_update();
+
+	while(HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)){};
+
+	while (!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)) {
+
+		HAL_Delay(200);
+		while(!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)){};
+		HAL_Delay(200);
+		i=120;
+		printf("slope(%3d)\r\n", i); //+h24
+	}
+
 	while (1) {
 
-		RGBW(i++);
-		i = (i < 4) ? i : 0;
-		HAL_Delay(100);
+
+		if (!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)) {
+
+			HAL_Delay(200);
+			while(!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)){};
+			HAL_Delay(200);
+			i++;
+			printf("slope(%3d)\r\n", i); //+h24
+		}
+
+
+
+
+#ifdef DEBUG_CORE_DBG2
+	HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
+#endif
+
+		led_set(MY92XX_R1,i);
+		my92xx_setChannel(MY92XX_R1, i);
+		my92xx_setChannel(MY92XX_R2, i);
+		my92xx_setChannel(MY92XX_R3, i);
+		my92xx_setChannel(MY92XX_R4, i);
+		my92xx_update();
+
+		//HAL_Delay(500);
+/*
+		if (up) {
+			i++;
+			if (i > 254)
+				up = 0;
+
+		} else {
+			i--;
+			if (i < 1)
+				up = 1;
+		}
+*/
+		//RGBW(i++);
+		//i = (i < 4) ? i : 0;
+		//HAL_Delay(100);
 
 		/*
 		 static unsigned char count = 0;
 		 rainbow(count++);
 		 HAL_Delay(10);
 		 */
+
 		//core_process();
+		//core_process_h24();
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
@@ -408,8 +461,8 @@ static void MX_TIM3_Init(void) {
 		Error_Handler();
 	}
 	sConfigOC.OCMode = TIM_OCMODE_PWM1;
-	sConfigOC.Pulse = 600;
-	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+	sConfigOC.Pulse = 0;
+	sConfigOC.OCPolarity = TIM_OCPOLARITY_LOW;
 	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
 	if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1)
 			!= HAL_OK) {
@@ -419,10 +472,12 @@ static void MX_TIM3_Init(void) {
 			!= HAL_OK) {
 		Error_Handler();
 	}
+	sConfigOC.Pulse = 240;
 	if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_3)
 			!= HAL_OK) {
 		Error_Handler();
 	}
+	sConfigOC.Pulse = 0;
 	if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_4)
 			!= HAL_OK) {
 		Error_Handler();

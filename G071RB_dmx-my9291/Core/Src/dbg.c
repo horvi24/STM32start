@@ -2,9 +2,11 @@
 //#include "stdio.h"
 //#include <string.h>
 
-#include <dbg.h>
+//#include "dbg.h"
 //#include "usbd_cdc_if.h"
-#include "stm32g0xx_hal.h"
+//#include "stm32g0xx_hal.h"
+#include "core.h"
+
 
 static char dbg_buf[512];
 

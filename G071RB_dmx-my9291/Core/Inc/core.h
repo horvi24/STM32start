@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
+
 #include "main.h"
 #include "curve.h"
 #include "adc.h"
@@ -14,6 +16,11 @@
 #include "my92x.h"
 //-h24 #include "usb_debug.h"
 #include "dbg.h" //+h24
+/*
+#include "stm32g0xx_hal.h"
+#include "stm32g0xx_hal_tim.h"
+#include "stm32g0xx_hal_uart.h"
+*/
 
 
 
@@ -56,7 +63,10 @@
 
 
 
+
 bool core_init(void);
 void core_process(void);
+
+void core_process_h24(void);
 
 #endif		/* CORE_H */

@@ -5,9 +5,13 @@
 //#include "stm32g0xx_hal.h"
 
 //#include "stm32g0xx_hal.h"
-#include <stdio.h>
-#include <stdint.h>
+//#include <stdio.h>
+//#include <stdint.h>
 
+//#define DEBUG_MY92XX
+#define DEBUG_DMX_DBG1
+//#define DEBUG_MY92XX_DBG2
+#define DEBUG_CORE_DBG2
 
 
 void dbg_test();

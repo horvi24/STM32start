@@ -10,6 +10,7 @@
 
 
 //#define DEBUG_MY92XX
+//#define DEBUG_MY92XX_DBG2
 
 // Define constants for the model types
 #define MY92XX_MODEL_MY9291 0x00
