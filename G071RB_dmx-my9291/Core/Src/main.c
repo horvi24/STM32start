@@ -173,6 +173,35 @@ void RGBW1(uint8_t cnt) {
 	my92xx_update();
 
 }
+void RGBW_red(void) {
+	uint8_t i = 0, up = 1;
+	while(HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)){
+		#ifdef DEBUG_CORE_DBG2
+		HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
+		#endif
+
+		led_set(MY92XX_R1, i);
+		my92xx_setChannel(MY92XX_R1, i);
+		my92xx_setChannel(MY92XX_R2, i);
+		my92xx_setChannel(MY92XX_R3, i);
+		my92xx_setChannel(MY92XX_R4, i);
+		my92xx_update();
+
+		if (up) {
+			i++;
+			if (i > 254)
+				up = 0;
+
+		} else {
+			i--;
+			if (i < 1)
+				up = 1;
+		}
+		HAL_Delay(1);
+	}
+}
+
 
 /* USER CODE END 0 */
 
@@ -182,7 +211,7 @@ void RGBW1(uint8_t cnt) {
  */
 int main(void) {
 	/* USER CODE BEGIN 1 */
-	uint8_t i = 0, up = 1;
+	//uint8_t i = 0, up = 1;
 
 	/* USER CODE END 1 */
 
@@ -212,7 +241,8 @@ int main(void) {
 	if (!core_init())
 		Error_Handler();
 
-	printf("\r\nDMX512-MY9291 receiver b0.1 (14/05/24)\r\n"); //+h24
+	printf("\r\nDMX512 receiver - 4x MY9291 RGBW & PWM RGBW\r\n");
+	printf("beta 1.0 (17/05/24)\r\n");
 
 	my92xx_init(MY92XX_MODEL, MY92XX_CHIPS, MY92XX_COMMAND_DEFAULT);
 	my92xx_setState(true);
@@ -221,78 +251,44 @@ int main(void) {
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
-	led_set(MY92XX_B1,0);
+	/*
+	 led_set(MY92XX_B1,0);
 
-	my92xx_setChannel(MY92XX_R1, 0);
-	my92xx_setChannel(MY92XX_G2, 0);
-	my92xx_setChannel(MY92XX_B3, 0);
-	my92xx_setChannel(MY92XX_W4, 0);
-	my92xx_update();
+	 my92xx_setChannel(MY92XX_R1, 0);
+	 my92xx_setChannel(MY92XX_G2, 0);
+	 my92xx_setChannel(MY92XX_B3, 0);
+	 my92xx_setChannel(MY92XX_W4, 0);
+	 my92xx_update();
+	 */
+	/*
+	 while(HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)){};
 
-	while(HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)){};
+	 while (!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)) {
 
-	while (!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)) {
-
-		HAL_Delay(200);
-		while(!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)){};
-		HAL_Delay(200);
-		i=120;
-		printf("slope(%3d)\r\n", i); //+h24
-	}
+	 HAL_Delay(200);
+	 while(!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)){};
+	 HAL_Delay(200);
+	 i=0;
+	 printf("slope(%3d)\r\n", i); //+h24
+	 }
+	 */
+	//led_set(MY92XX_B1, 0);
+	//RGBW_red();
 
 	while (1) {
-
-
-
-
-
-
-#ifdef DEBUG_CORE_DBG2
-	HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
-#endif
-
-		led_set(MY92XX_R1,i);
-		my92xx_setChannel(MY92XX_R1, i);
-		my92xx_setChannel(MY92XX_R2, i);
-		my92xx_setChannel(MY92XX_R3, i);
-		my92xx_setChannel(MY92XX_R4, i);
-		my92xx_update();
-
-        if (!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)) {
-
-            HAL_Delay(200);
-            while(!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)){};
-            HAL_Delay(200);
-            i++;
-            printf("slope(%3d)\r\n", i); //+h24
-        }
-
-		//HAL_Delay(500);
-/*
-		if (up) {
-			i++;
-			if (i > 254)
-				up = 0;
-
-		} else {
-			i--;
-			if (i < 1)
-				up = 1;
-		}
-*/
-		//RGBW(i++);
-		//i = (i < 4) ? i : 0;
-		//HAL_Delay(100);
-
 		/*
-		 static unsigned char count = 0;
-		 rainbow(count++);
-		 HAL_Delay(10);
+		 if (!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)) {
+			 HAL_Delay(2);
+			 while(!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)){};
+			 HAL_Delay(200);
+
+		 }
 		 */
 
 		//core_process();
-		//core_process_h24();
+		core_process_h24();
+
+
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */

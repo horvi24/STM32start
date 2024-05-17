@@ -50,6 +50,16 @@ void my92xx_dcki_pulse(uint16_t times) {
 void my92xx_write_h24(uint16_t data, uint8_t bit_length) {
     uint16_t mask = (0x01 << (bit_length - 1));
 
+    //12us together
+    my92xx_dly_us(DLY_12US);
+
+    //1 DI pulse h24
+    LED_DI_GPIO_Port->BSRR = (uint32_t) LED_DI_Pin; //SET
+    LED_DI_GPIO_Port->BRR = (uint32_t) LED_DI_Pin;  //RESET
+
+    my92xx_dly_us(DLY_12US);
+
+
     for (uint16_t i = 0; i < bit_length / 2; i++) {
         LED_DCKI_GPIO_Port->BRR = (uint32_t) LED_DCKI_Pin;  //RESET
 
@@ -75,6 +85,18 @@ void my92xx_write_h24(uint16_t data, uint8_t bit_length) {
 
 void my92xx_write(uint16_t data, uint8_t bit_length) {
     uint16_t mask = (0x01 << (bit_length - 1));
+
+    my92xx_dly_us(DLY_12US);
+
+    //1 DI pulse h24
+    //my92xx_di_pulse(1);
+    HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_SET);
+    //HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
+    //HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
+
+    my92xx_dly_us(DLY_12US);
+
 
     for (uint16_t i = 0; i < bit_length / 2; i++) {
         HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_RESET);
@@ -188,13 +210,17 @@ void my92xx_send() {
 	HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
 #endif
+
+
     // TStop > 12us.
     //os_delay_us(12);
     my92xx_dly_us(DLY_12US);
 
+
     // Send color data
     for (uint8_t channel = 0; channel < _channels; channel++) {
-        my92xx_write(_state ? value[channel] : 0, bit_length);
+        //my92xx_write(_state ? value[channel] : 0, bit_length);
+        my92xx_write_h24(_state ? value[channel] : 0, bit_length);
     }
 
     // TStart > 12us. Ready for send DI pulse.
@@ -284,27 +310,20 @@ void my92xx_init(uint8_t model, uint8_t chips, uint8_t command) {
     HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
 #endif
 
-//HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
 // Clear all duty register
     my92xx_dcki_pulse(32 * _chips); //64*N/2 pulses after poweron
-//HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
 
 // Send init command
     my92xx_set_cmd(command);
-
     my92xx_setState(true);
+
 //	for (uint8_t i = 0; i < MY92XX_CHIPS; i++)
 //		my92xx_setChannel(i, 0);
-
-    /*
      my92xx_setChannel(MY92XX_B1, LED_RGBW_MY92_ON);
      my92xx_setChannel(MY92XX_B2, LED_RGBW_MY92_ON);
      my92xx_setChannel(MY92XX_B3, LED_RGBW_MY92_ON);
      my92xx_setChannel(MY92XX_B4, LED_RGBW_MY92_ON);
-     */
-    my92xx_update();
-
-//DEBUG_MSG_MY92XX("[MY92XX] Initialized\n");
-//printf("[MY92XX] Initialized\r\n");
+     my92xx_update();
+printf("[MY92XX] Initialized\r\n");
 
 }
