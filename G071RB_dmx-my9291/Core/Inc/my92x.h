@@ -87,6 +87,7 @@ void my92xx_update();
 void my92xx_set_cmd(uint8_t command);
 void my92xx_send();
 
+void my92xx_init_blue(void);
 void my92xx_init(uint8_t model, uint8_t chips, uint8_t command);
 
 

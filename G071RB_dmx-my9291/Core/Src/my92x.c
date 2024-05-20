@@ -55,6 +55,7 @@ void my92xx_write_h24(uint16_t data, uint8_t bit_length) {
 
     //1 DI pulse h24
     LED_DI_GPIO_Port->BSRR = (uint32_t) LED_DI_Pin; //SET
+    LED_DI_GPIO_Port->BSRR = (uint32_t) LED_DI_Pin; //SET
     LED_DI_GPIO_Port->BRR = (uint32_t) LED_DI_Pin;  //RESET
 
     my92xx_dly_us(DLY_12US);
@@ -132,14 +133,14 @@ void my92xx_set_cmd(uint8_t command) {
     my92xx_di_pulse(12);
 
     // Delay >12us, begin send CMD data
-    my92xx_dly_us(DLY_12US);
+    my92xx_dly_us(DLY_12US); //allready in my92xx_write_h24();
 
 
     // Send CMD data
     uint8_t command_data = *(uint8_t*) (&command);
     for (uint8_t i = 0; i < _chips; i++) {
         //my92xx_write(command_data, 8);
-        my92xx_write(command_data, 8);
+    	my92xx_write_h24(command_data, 8);
     }
 
 
@@ -214,7 +215,7 @@ void my92xx_send() {
 
     // TStop > 12us.
     //os_delay_us(12);
-    my92xx_dly_us(DLY_12US);
+    my92xx_dly_us(DLY_12US); //allready in my92xx_write_h24();
 
 
     // Send color data
@@ -272,6 +273,16 @@ void my92xx_update() {
 }
 
 // -----------------------------------------------------------------------------
+void my92xx_init_blue(void) {
+	//	for (uint8_t i = 0; i < MY92XX_CHIPS; i++)
+	//		my92xx_setChannel(i, 0);
+	     my92xx_setChannel(MY92XX_B1, LED_RGBW_MY92_ON);
+	     my92xx_setChannel(MY92XX_B2, LED_RGBW_MY92_ON);
+	     my92xx_setChannel(MY92XX_B3, LED_RGBW_MY92_ON);
+	     my92xx_setChannel(MY92XX_B4, LED_RGBW_MY92_ON);
+	     my92xx_update();
+
+}
 
 void my92xx_init(uint8_t model, uint8_t chips, uint8_t command) {
     //uint8_t _channels;
@@ -317,13 +328,6 @@ void my92xx_init(uint8_t model, uint8_t chips, uint8_t command) {
     my92xx_set_cmd(command);
     my92xx_setState(true);
 
-//	for (uint8_t i = 0; i < MY92XX_CHIPS; i++)
-//		my92xx_setChannel(i, 0);
-     my92xx_setChannel(MY92XX_B1, LED_RGBW_MY92_ON);
-     my92xx_setChannel(MY92XX_B2, LED_RGBW_MY92_ON);
-     my92xx_setChannel(MY92XX_B3, LED_RGBW_MY92_ON);
-     my92xx_setChannel(MY92XX_B4, LED_RGBW_MY92_ON);
-     my92xx_update();
-printf("[MY92XX] Initialized\r\n");
+//printf("[MY92XX] Initialized\r\n");
 
 }

@@ -78,6 +78,8 @@ static void MX_TIM1_Init(void);
 #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
 #endif /* __GNUC__ */
 
+
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -90,89 +92,6 @@ PUTCHAR_PROTOTYPE {
 	return ch;
 }
 
-void rainbow(unsigned char index) {
-
-	if (index < 85) {
-		my92xx_setChannel(MY92XX_R1, index * 3);
-		my92xx_setChannel(MY92XX_G1, 255 - index * 3);
-		my92xx_setChannel(MY92XX_B1, 0);
-	} else if (index < 170) {
-		index -= 85;
-		my92xx_setChannel(MY92XX_R1, 255 - index * 3);
-		my92xx_setChannel(MY92XX_G1, 0);
-		my92xx_setChannel(MY92XX_B1, index * 3);
-	} else {
-		index -= 170;
-		my92xx_setChannel(MY92XX_R1, 0);
-		my92xx_setChannel(MY92XX_G1, index * 3);
-		my92xx_setChannel(MY92XX_B1, 255 - index * 3);
-	}
-	my92xx_update();
-
-}
-
-void RGBW(uint8_t cnt) {
-
-	for (uint8_t i = 4; i < 16; i++)
-		my92xx_setChannel(i, 0);
-
-	switch (cnt) {
-	case 0:
-		//my92xx_setChannel(MY92XX_R1, LED_RGBW_MY92_ON);
-		my92xx_setChannel(MY92XX_G2, LED_RGBW_MY92_ON);
-		my92xx_setChannel(MY92XX_B3, LED_RGBW_MY92_ON);
-		my92xx_setChannel(MY92XX_W4, LED_RGBW_MY92_ON);
-		break;
-	case 1:
-		my92xx_setChannel(MY92XX_R2, LED_RGBW_MY92_ON);
-		my92xx_setChannel(MY92XX_G3, LED_RGBW_MY92_ON);
-		my92xx_setChannel(MY92XX_B4, LED_RGBW_MY92_ON);
-		//my92xx_setChannel(MY92XX_W1, LED_RGBW_MY92_ON);
-		break;
-	case 2:
-		my92xx_setChannel(MY92XX_R3, LED_RGBW_MY92_ON);
-		my92xx_setChannel(MY92XX_G4, LED_RGBW_MY92_ON);
-		//my92xx_setChannel(MY92XX_B1, LED_RGBW_MY92_ON);
-		my92xx_setChannel(MY92XX_W2, LED_RGBW_MY92_ON);
-		break;
-	case 3:
-		my92xx_setChannel(MY92XX_R4, LED_RGBW_MY92_ON);
-		//my92xx_setChannel(MY92XX_G1, LED_RGBW_MY92_ON);
-		my92xx_setChannel(MY92XX_B2, LED_RGBW_MY92_ON);
-		my92xx_setChannel(MY92XX_W3, LED_RGBW_MY92_ON);
-		break;
-	default:
-		break;
-	}
-
-	my92xx_update();
-
-}
-void RGBW1(uint8_t cnt) {
-
-	for (uint8_t i = 0; i < 4; i++)
-		my92xx_setChannel(i, 0);
-
-	switch (cnt) {
-	case 0:
-		my92xx_setChannel(MY92XX_R1, LED_RGBW_MY92_ON);
-		break;
-	case 1:
-		my92xx_setChannel(MY92XX_G1, LED_RGBW_MY92_ON);
-		break;
-	case 2:
-		my92xx_setChannel(MY92XX_B1, LED_RGBW_MY92_ON);
-		break;
-	case 3:
-		my92xx_setChannel(MY92XX_W1, LED_RGBW_MY92_ON);
-		break;
-	default:
-		break;
-	}
-
-	my92xx_update();
-
-}
 void RGBW_red(void) {
 	uint8_t i = 0, up = 1;
 	while(HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)){
@@ -201,7 +120,6 @@ void RGBW_red(void) {
 		HAL_Delay(1);
 	}
 }
-
 
 /* USER CODE END 0 */
 
@@ -237,15 +155,15 @@ int main(void) {
 	MX_TIM3_Init();
 	MX_USART1_UART_Init();
 	MX_TIM1_Init();
+
 	/* USER CODE BEGIN 2 */
 	if (!core_init())
 		Error_Handler();
 
+
 	printf("\r\nDMX512 receiver - 4x MY9291 RGBW & PWM RGBW\r\n");
 	printf("beta 1.0 (17/05/24)\r\n");
 
-	my92xx_init(MY92XX_MODEL, MY92XX_CHIPS, MY92XX_COMMAND_DEFAULT);
-	my92xx_setState(true);
 
 	/* USER CODE END 2 */
 
@@ -287,6 +205,7 @@ int main(void) {
 
 		//core_process();
 		core_process_h24();
+		//RGBW_red();
 
 
 		/* USER CODE END WHILE */
@@ -394,6 +313,7 @@ static void MX_TIM1_Init(void) {
 		Error_Handler();
 	}
 	/* USER CODE BEGIN TIM1_Init 2 */
+
 	__HAL_TIM_ENABLE_IT(&htim1, TIM_IT_UPDATE);
 
 	TIM_CCxChannelCmd(htim1.Instance, TIM_CHANNEL_1, TIM_CCx_ENABLE);
@@ -406,6 +326,8 @@ static void MX_TIM1_Init(void) {
 	__HAL_TIM_CLEAR_FLAG(&htim1, TIM_IT_CC2);
 
 	__HAL_TIM_ENABLE(&htim1);
+
+
 	/*-h24
 	 HAL_NVIC_SetPriority(TIM2_IRQn, 0, 0);
 	 HAL_NVIC_EnableIRQ(TIM2_IRQn);
@@ -632,6 +554,12 @@ static void MX_GPIO_Init(void) {
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 	/* USER CODE BEGIN MX_GPIO_Init_2 */
+
+	//init MY9291 h24
+	my92xx_init(MY92XX_MODEL, MY92XX_CHIPS, MY92XX_COMMAND_DEFAULT);
+	my92xx_init_blue();
+
+
 	/* USER CODE END MX_GPIO_Init_2 */
 }
 

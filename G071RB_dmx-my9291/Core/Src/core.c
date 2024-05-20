@@ -81,6 +81,7 @@ void core_process_h24(void) {
 		my92xx_setChannel(MY92XX_B4, packet[ADDR_LED_RGBW_MY92+14]);
 		my92xx_setChannel(MY92XX_W4, packet[ADDR_LED_RGBW_MY92+15]);
 
+		//my92xx_init(MY92XX_MODEL, MY92XX_CHIPS, MY92XX_COMMAND_DEFAULT);   //
 		my92xx_update();
 
 		if (!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)) {
