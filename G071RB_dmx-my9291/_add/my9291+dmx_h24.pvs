@@ -263,11 +263,11 @@ channel1\name=TX
 channel1\initial_pin_state=2
 
 [view0]
-scale=2.035002035002033e-7
-v_offset=-39
+scale=6.868131868131868e-5
+v_offset=-19
 splitter_state=@ByteArray(\0\0\0\xff\0\0\0\x1\0\0\0\x2\0\0\0L\0\0\x6\v\x1\0\0\0\x1\x1\0\0\0\x1\0)
 segment_display_mode=3
-offset=22 serialization::archive 14 0 0 0 0 32586 25868365 23643160 81155848 87932000 71244313 -8 0 0 6
+offset=22 serialization::archive 14 0 0 0 0 0 0 0 0 0 0 0 0 0 6
 zero_offset=22 serialization::archive 14 0 0 0 0 0 0 0 0 0 0 0 0 0 6
 D0\trace_height=26
 D1\trace_height=26

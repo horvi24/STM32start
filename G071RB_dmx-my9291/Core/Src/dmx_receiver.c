@@ -93,6 +93,12 @@ static void first_break_rising(uint32_t OverflowCount)
 	 */
 	NetCounter += OverflowCount * TIMER_PERIOD;
 
+#ifdef DEBUG_DMX_DBG1_3
+	//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET);
+	//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET);
+	//printf("FBR> c2:%d c1:%d nc:%d bt:%d\r\n", Counter2, Counter1, NetCounter, BreakTime);
+
+#endif
 	if (NetCounter > BreakTime) {
 		/* Set flags that Break is detected */
 		BreakFlag = 1;
@@ -105,6 +111,7 @@ static void first_break_rising(uint32_t OverflowCount)
 		MABOverflowCount = OverflowCount;
 	}
 	else {
+
 		/*
 		 * Break is too short for correct DMX packet. So, edge
 		 * interrupts are disabled now. Rising edge handler will
@@ -165,6 +172,7 @@ static void rising_edge(void)
 
 //HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET); //+h24
 
+
 	/* No Breaks received yet, it is first */
 	if (InitBreakFlag == 0)
 	{
@@ -188,6 +196,7 @@ static void rising_edge(void)
 	}
 }
 
+
 /* Falling edge is end of MAB */
 static void falling_edge(void)
 {
@@ -205,6 +214,13 @@ static void falling_edge(void)
 	/* Total time */
 	NetCounter += (OverflowCount - MABOverflowCount) * TIMER_PERIOD;
 
+#ifdef DEBUG_DMX_DBG1_3
+	HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET);
+#endif
+#ifdef DEBUG_DMX_PRINTF_4
+	printf("FE > bf:%d nc:%d\r\n", BreakFlag, NetCounter);
+#endif
 
 
 	/* Return if correct Break was not detected previously */
@@ -215,8 +231,6 @@ static void falling_edge(void)
 		/* Got correct MAB, ready to receive slots */
 		MABFlag = 1;
 		BreakFlag = 0;
-
-
 	}
 	else {
 		/* Too short MAB, so clear and wait for new Break (UART FE) */
@@ -225,11 +239,18 @@ static void falling_edge(void)
 		InitBreakFlag = 0;
 	}
 
+#ifdef DEBUG_DMX_PRINTF_4
+	printf("FE > bf:%d mabf:%d gofc:%d ibf:%d\r\n", BreakFlag, MABFlag, GlobalOverflowCount, InitBreakFlag);
+#endif
+
+
 }
 
 /* Frame Error is detected by UART after 10bits of low level. So it is Break */
 static void frame_error_handler(uint32_t Counter)
 {
+
+
 	/* actually FE is 40 usec after Break start... */
 
 	if ((BreakFlag == 0) && (MABFlag == 0)) {
@@ -261,9 +282,22 @@ static void frame_error_handler(uint32_t Counter)
 
 static void receive_data_handler(uint32_t Data)
 {
+
+#ifdef DEBUG_DMX_DBG1_3
+	//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET);
+	//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET);
+#endif
+#ifdef DEBUG_DMX_DBG1_4
+	//printf("RDH> dcf:%d dcc:%d mabf:%d ibf:%d goc:%d\r\n", DataCorruptFlag, DMXChannelCount, MABFlag, InitBreakFlag, GlobalOverflowCount);
+#endif
+
 	/* Do not receice data without correct MAB */
-	if (MABFlag == 0)
+	if (MABFlag == 0){
+
+
 		return;
+	}
+
 	/*
 	 * MABFlag is still set at second MAB. So, MAB Falling interrupt
 	 * sets DataCorruptFlag if second MAB is too short
@@ -325,11 +359,11 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 
 
   if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1){
-#ifdef DEBUG_DMX_DBG1
+#ifdef DEBUG_DMX_DBG1_2
 		HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET); //+h24
 #endif
 		falling_edge();
-#ifdef DEBUG_DMX_DBG1
+#ifdef DEBUG_DMX_DBG1_2
 		HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET); //+h24
 #endif
 
@@ -344,3 +378,20 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
   //HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET); //+h24
 
 }
+
+/* Init DMX variables */
+void dmx_init_h24(void){
+#ifdef DEBUG_DMX_DBG1
+		//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET); //+h24
+		//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET); //+h24
+#endif
+
+	//__disable_irq();
+	GlobalOverflowCount = 0;
+	BreakFlag = 0;
+	InitBreakFlag = 0;
+	//__enable_irq();
+
+}
+
+

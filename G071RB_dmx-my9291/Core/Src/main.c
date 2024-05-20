@@ -146,7 +146,6 @@ int main(void) {
 	SystemClock_Config();
 
 	/* USER CODE BEGIN SysInit */
-
 	/* USER CODE END SysInit */
 
 	/* Initialize all configured peripherals */
@@ -157,13 +156,20 @@ int main(void) {
 	MX_TIM1_Init();
 
 	/* USER CODE BEGIN 2 */
+
 	if (!core_init())
 		Error_Handler();
 
 
 	printf("\r\nDMX512 receiver - 4x MY9291 RGBW & PWM RGBW\r\n");
 	printf("beta 1.0 (17/05/24)\r\n");
-
+/*
+	__disable_irq();
+	dmx_init_h24();
+	MX_USART1_UART_Init();
+	MX_TIM1_Init();
+	__enable_irq();
+*/
 
 	/* USER CODE END 2 */
 
@@ -576,6 +582,7 @@ void Error_Handler(void) {
 	/* User can add his own implementation to report the HAL error return state */
 	__disable_irq();
 	while (1) {
+		 printf("error handler\r\n"); //+h24
 	}
 	/* USER CODE END Error_Handler_Debug */
 }

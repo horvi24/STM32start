@@ -48,13 +48,15 @@ void core_process_h24(void) {
 
 
 	if (len == 0) {
+
 		my92xx_update();
 	}
 	else {
-		#ifdef DEBUG_CORE_DBG2
-			HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
-			HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
-		#endif
+#ifdef DEBUG_MY92XX_DBG2
+	HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
+#endif
+
 
 		led_set(0, curve_fn(packet[ADDR_LED_RGBW_PWM]));
 		led_set(1, curve_fn(packet[ADDR_LED_RGBW_PWM + 1]));

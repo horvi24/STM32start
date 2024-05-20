@@ -207,10 +207,6 @@ void my92xx_send() {
      */
 
     // ets_intr_lock();
-#ifdef DEBUG_MY92XX_DBG2
-	HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
-#endif
 
 
     // TStop > 12us.
@@ -270,6 +266,7 @@ void my92xx_setState(bool state) {
 void my92xx_update() {
 
     my92xx_send();
+
 }
 
 // -----------------------------------------------------------------------------
