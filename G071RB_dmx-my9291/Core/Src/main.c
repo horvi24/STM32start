@@ -191,6 +191,8 @@ int main(void)
 	 */
 	//led_set(MY92XX_B1, 0);
 	//RGBW_red();
+	DBG_OUT4_H();
+	DBG_OUT4_L();
 
 	while (1) {
 		/*
@@ -201,7 +203,6 @@ int main(void)
 
 		 }
 		 */
-
 		//core_process();
 		core_process_h24();
 		//RGBW_red();
