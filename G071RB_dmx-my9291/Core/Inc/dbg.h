@@ -9,6 +9,17 @@
 //#include <stdint.h>
 
 
+//#define DEBUG_MY92XX
+//#define DEBUG_DMX_DBG1
+//#define DEBUG_DMX_DBG1_2
+//#define DEBUG_DMX_DBG1_3
+//#define DEBUG_DMX_PRINTF_4
+
+//#define DEBUG_MY92XX_DBG2
+//#define DEBUG_CORE_DBG2
+//#define DEBUG_MY92XX_DBG2_INIT
+
+
 //#define DBG_OUT1 //DBG pin PD9
 //#define DBG_OUT2 //DBG pin PD8
 //#define DBG_OUT3 //DBG pin PB13
@@ -31,20 +42,9 @@
 #define	DBG_OUT5_L() HAL_GPIO_WritePin(DBG_OUT5_GPIO_Port, DBG_OUT5_Pin, GPIO_PIN_RESET)
 
 
-//#define DEBUG_MY92XX
-//#define DEBUG_DMX_DBG1
-//#define DEBUG_DMX_DBG1_2
-#define DEBUG_DMX_DBG1_3
-//#define DEBUG_DMX_PRINTF_4
-
-#define DEBUG_MY92XX_DBG2
-//#define DEBUG_CORE_DBG2
-//#define DEBUG_MY92XX_DBG2_INIT
-
-
-void dbg_test();
-
 
 void dbg_dumppacket(uint8_t *src_packet, uint16_t len);
+void RGBW_red(void);
+
 
 #endif		/* DBG_H */

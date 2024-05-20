@@ -10,10 +10,6 @@
 
 static char dbg_buf[512];
 
-void dbg_test(){
-	printf("printf test\r\n");
-}
-
 void dbg_dumppacket(uint8_t *src_packet, uint16_t len)
 {
 	char *ptr = dbg_buf;
@@ -43,3 +39,27 @@ void dbg_dumppacket(uint8_t *src_packet, uint16_t len)
 
 }
 
+void RGBW_red(void) {
+    uint8_t i = 0, up = 1;
+    while (HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)) {
+
+        //DBG_OUT1_H();  DBG_OUT1_L();    //**//**//
+        led_set(MY92XX_R1, i);
+        my92xx_setChannel(MY92XX_R1, i);
+        my92xx_setChannel(MY92XX_R2, i);
+        my92xx_setChannel(MY92XX_R3, i);
+        my92xx_setChannel(MY92XX_R4, i);
+        my92xx_update();
+        HAL_Delay(1);
+
+        if (up) {
+            i++;
+            if (i > 254)
+                up = 0;
+        } else {
+            i--;
+            if (i < 1)
+                up = 1;
+        }
+    }
+}

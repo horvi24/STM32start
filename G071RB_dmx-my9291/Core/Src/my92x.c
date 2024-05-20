@@ -1,6 +1,7 @@
+//https://github.com/xoseperez/my92xx/blob/master/src/my92xx.cpp
+
 #include "my92x.h"
 
-//https://github.com/xoseperez/my92xx/blob/master/src/my92xx.cpp
 /*
  my92xx_model_t model = MY92XX_MODEL;
  uint8_t chips = MY92XX_CHIPS;
@@ -31,8 +32,6 @@ void my92xx_dly_us(uint16_t time) {             // 16=8.3us, 26=12.2us 36=16.2us
 
 void my92xx_di_pulse(uint16_t times) {
     for (uint16_t i = 0; i < times; i++) {
-        //digitalWrite(_pin_di, HIGH);
-        //digitalWrite(_pin_di, LOW);
         HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_SET);
         HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
     }
@@ -40,8 +39,6 @@ void my92xx_di_pulse(uint16_t times) {
 
 void my92xx_dcki_pulse(uint16_t times) {
     for (uint16_t i = 0; i < times; i++) {
-        //digitalWrite(_pin_dcki, HIGH);
-        //digitalWrite(_pin_dcki, LOW);
         HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_SET);
         HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_RESET);
     }
@@ -54,7 +51,6 @@ void my92xx_write_h24(uint16_t data, uint8_t bit_length) {
     my92xx_dly_us(DLY_12US);
 
     //1 DI pulse h24
-    LED_DI_GPIO_Port->BSRR = (uint32_t) LED_DI_Pin; //SET
     LED_DI_GPIO_Port->BSRR = (uint32_t) LED_DI_Pin; //SET
     LED_DI_GPIO_Port->BRR = (uint32_t) LED_DI_Pin;  //RESET
 
@@ -90,11 +86,8 @@ void my92xx_write(uint16_t data, uint8_t bit_length) {
     my92xx_dly_us(DLY_12US);
 
     //1 DI pulse h24
-    //my92xx_di_pulse(1);
     HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_SET);
-    //HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_SET);
     HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
-    //HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
 
     my92xx_dly_us(DLY_12US);
 
@@ -142,7 +135,6 @@ void my92xx_set_cmd(uint8_t command) {
         //my92xx_write(command_data, 8);
     	my92xx_write_h24(command_data, 8);
     }
-
 
     // TStart > 12us. Delay 12 us.
     ///os_delay_us(12);
@@ -194,17 +186,6 @@ void my92xx_send() {
 	}
 	printf(" )\r\n");
 #endif
-    /*
-     #ifdef DEBUG_MY92XX
-     printf("[MY92XX] Refresh: %s (", _state ? "ON" : "OFF");
-     for (uint8_t channel = 0; channel < _channels; channel++) {
-     //DEBUG_MSG_MY92XX(" %d", _value[channel]);
-     printf(" %d", _value[channel]);
-     }
-     //DEBUG_MSG_MY92XX(" )\r\n");
-     printf(" )\r\n");
-     #endif
-     */
 
     // ets_intr_lock();
 
@@ -311,12 +292,8 @@ void my92xx_init(uint8_t model, uint8_t chips, uint8_t command) {
 
     HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_RESET);
-//varjanta  HAL_GPIO_WritePin(GPIOB, LED_DCKI_Pin|LED_DI_Pin, GPIO_PIN_RESET);
 
-#ifdef DEBUG_MY92XX_DBG2_INIT
-    HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(DBG_OUT2_GPIO_Port, DBG_OUT2_Pin, GPIO_PIN_RESET);
-#endif
+    //DBG_OUT1_H();  DBG_OUT1_L();    //**//**//
 
 // Clear all duty register
     my92xx_dcki_pulse(32 * _chips); //64*N/2 pulses after poweron
