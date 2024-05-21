@@ -1,9 +1,10 @@
 #include "main.h"
 
+#include "core.h"
 #include "dmx_transmitter.h"
 
 extern TIM_HandleTypeDef htim2;
-extern TIM_HandleTypeDef htim3;
+extern TIM_HandleTypeDef htim14;
 
 volatile static uint16_t slots_sent;
 volatile static uint16_t slots_count;
@@ -16,17 +17,27 @@ void dmx_send(const uint8_t *slots, uint16_t size)
 	slots_sent = 0;
 	slots_count = size;
 
+    DBG_OUT2();
+
+
 	/*
 	 * DMX512 packet starts with Reset Sequence. Reset Sequence starts with
 	 * Break (low level), so set pin to output low.
 	 */
+/*
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 	GPIO_InitStruct.Pin = GPIO_PIN_8;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
+*/
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitStruct.Pin = GPIO_PIN_4;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
 
-	/*
+    /*
 	 * Waiting for Break time, and everything further, is done through TIM3
 	 * interrupt. At first interrupt (CC1) this timer changes pin to high
 	 * for MarkAfterBreak. Then, in update interrupt, it configures pin into
@@ -35,7 +46,7 @@ void dmx_send(const uint8_t *slots, uint16_t size)
 	 */
 
 	/* So, enable this timer */
-	__HAL_TIM_ENABLE(&htim3);
+	__HAL_TIM_ENABLE(&htim14);
 
 	/* Wait until transmission of whole DMX packet is finished */
 	while (slots_ptr != NULL) {};
@@ -60,14 +71,15 @@ void dmx_slot(void)
 	}
 }
 
-/* Interrupt handler for sending reset sequence (from TIM3 interrupt) */
+/* Interrupt handler for sending reset sequence (from TIM14 interrupt) */
 void dmx_reset_sequence(void)
 {
-	if (TIM3->SR & TIM_IT_UPDATE)
+    DBG_OUT4();
+	if (TIM14->SR & TIM_IT_UPDATE)
 	{
 		/* Reset sequence finished, stop timer */
-		TIM3->CR1 &= ~(TIM_CR1_CEN);
-		TIM3->CNT = 0;
+	    TIM14->CR1 &= ~(TIM_CR1_CEN);
+	    TIM14->CNT = 0;
 
 		/* Send start code 0x00 */
 		USART2->RDR = 0x00;
@@ -75,12 +87,12 @@ void dmx_reset_sequence(void)
 		/* Start timer for sending slots */
 		__HAL_TIM_ENABLE(&htim2);
 	}
-	else if (TIM3->SR & TIM_IT_CC1)
+	else if (TIM14->SR & TIM_IT_CC1)
 	{
 		/* Break end, set floating ping mode for Mark After Break */
 		GPIO_InitTypeDef GPIO_InitStruct = {0};
-		GPIO_InitStruct.Pin = GPIO_PIN_8;
+		GPIO_InitStruct.Pin = GPIO_PIN_4;
 		GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
-		HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+		HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 	}
 }

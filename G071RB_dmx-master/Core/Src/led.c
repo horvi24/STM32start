@@ -42,9 +42,9 @@ bool led_init(TIM_HandleTypeDef *htim)
 
 	HAL_TIM_PWM_ConfigChannel(htim, &sConfigOC, TIM_CHANNEL_1);
 	HAL_TIM_PWM_ConfigChannel(htim, &sConfigOC, TIM_CHANNEL_2);
+    HAL_TIM_PWM_ConfigChannel(htim, &sConfigOC, TIM_CHANNEL_3);
     sConfigOC.Pulse = 240;
 	HAL_TIM_PWM_ConfigChannel(htim, &sConfigOC, TIM_CHANNEL_4);
-	HAL_TIM_PWM_ConfigChannel(htim, &sConfigOC, TIM_CHANNEL_3);
 
 	HAL_TIM_PWM_Start(htim, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(htim, TIM_CHANNEL_2);

@@ -10,7 +10,7 @@
 #define DMX_BREAK	92
 #define DMX_MAB		12
 #define DMX_SLOT	44
-#define DMX_MBS		1
+//#define DMX_MBS		1
 
 
 uint16_t dmx_receive_24(uint8_t* dest);
