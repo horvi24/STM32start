@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-//#include "core.h"
+#include "core.h"
 #include "dmx_transmitter.h"
 
 //#include "usb_device.h"
