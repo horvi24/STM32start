@@ -120,16 +120,16 @@ int main(void) {
         Error_Handler();
 
     printf("\r\nDMX512 receiver - 4x MY9291 RGBW & PWM RGBW\r\n");
-    printf("beta 1.0 (17/05/24)\r\n");
+    printf("beta 1.1 (21/05/24)\r\n");
 
     /* USER CODE END 2 */
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
+    DBG_OUT2();
 
     while (1) {
 
-        //core_process();
         core_process_h24();
         //RGBW_red();
 

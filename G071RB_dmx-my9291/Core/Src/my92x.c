@@ -189,7 +189,6 @@ void my92xx_send() {
 
     // ets_intr_lock();
 
-
     // TStop > 12us.
     //os_delay_us(12);
     my92xx_dly_us(DLY_12US); //allready in my92xx_write_h24();
@@ -267,6 +266,8 @@ void my92xx_init(uint8_t model, uint8_t chips, uint8_t command) {
     _model = model;
     _chips = chips;
 
+    DBG_OUT5_H();    //**//**//
+
     if (_model == MY92XX_MODEL_MY9291) {
         _channels = 4 * _chips;
     } else if (_model == MY92XX_MODEL_MY9231) {
@@ -292,16 +293,11 @@ void my92xx_init(uint8_t model, uint8_t chips, uint8_t command) {
 
     HAL_GPIO_WritePin(LED_DI_GPIO_Port, LED_DI_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(LED_DCKI_GPIO_Port, LED_DCKI_Pin, GPIO_PIN_RESET);
-
-    //DBG_OUT1_H();  DBG_OUT1_L();    //**//**//
-
 // Clear all duty register
     my92xx_dcki_pulse(32 * _chips); //64*N/2 pulses after poweron
-
 // Send init command
     my92xx_set_cmd(command);
     my92xx_setState(true);
 
-//printf("[MY92XX] Initialized\r\n");
-
+    DBG_OUT5_L();    //**//**//
 }

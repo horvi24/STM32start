@@ -1,19 +1,18 @@
 //https://github.com/aleksandrgilfanov/stm32-dmx-receiver
 
 /*
-#include <stdbool.h>
-#include <string.h>
+ #include <stdbool.h>
+ #include <string.h>
 
-#include "main.h" //+h24
+ #include "main.h" //+h24
 
-#include "stm32g0xx_hal.h"
-#include "stm32g0xx_hal_tim.h"
-#include "stm32g0xx_hal_uart.h"
+ #include "stm32g0xx_hal.h"
+ #include "stm32g0xx_hal_tim.h"
+ #include "stm32g0xx_hal_uart.h"
 
-#include "dmx_receiver.h"
-*/
+ #include "dmx_receiver.h"
+ */
 #include "core.h" //+h24
-
 
 extern TIM_HandleTypeDef htim1;
 
@@ -38,7 +37,6 @@ static uint8_t DataCorruptFlag;
 /* Packet byte counter, used while receiving is still in process */
 static uint16_t DMXChannelCount;
 
-
 // DMX Packet buffer with one byte for first 0x00
 static uint8_t Packet[DMX_MAX_SLOTS + 1];
 // Flag that indicates succesfully received packet
@@ -46,17 +44,12 @@ static uint8_t PacketFlag;
 // Length of received packet
 static uint16_t PacketLength;
 
-/*
-extern uint8_t Packet[DMX_MAX_SLOTS + 1];
-extern uint8_t PacketFlag;
-extern uint16_t PacketLength;
-*/
 /* Blocking receive entire DMX packet */
-uint16_t dmx_receive(uint8_t* dest)
-{
+uint16_t dmx_receive(uint8_t *dest) {
 	uint16_t len;
 
-	while (PacketFlag == 0) {};
+	while (PacketFlag == 0) {
+	};
 
 	len = PacketLength;
 	memcpy(dest, Packet, len);
@@ -65,24 +58,29 @@ uint16_t dmx_receive(uint8_t* dest)
 	return len;
 }
 
-uint16_t dmx_receive_24(uint8_t* dest)
-{
+/* Non-Blocking receive entire DMX packet */
+uint16_t dmx_receive_24(uint8_t *dest) {
 	uint16_t len;
 
 	if (PacketFlag == 0) {
 		return 0;
-	}
-	else{
+	} else {
+
 		len = PacketLength;
 		memcpy(dest, Packet, len);
 		PacketFlag = 0;
+
+		if (!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)) {
+			printf("R24< pl:%3d len:%3d pf:%3d\r\n", PacketLength, len,
+					PacketFlag);
+			dbg_dumppacket(Packet, len);
+		}
+
 		return len;
 	}
 }
 
-
-static void first_break_rising(uint32_t OverflowCount)
-{
+static void first_break_rising(uint32_t OverflowCount) {
 	uint32_t NetCounter;
 
 	/* Calculate BreakTime = MABRising - BreakFalling */
@@ -93,12 +91,6 @@ static void first_break_rising(uint32_t OverflowCount)
 	 */
 	NetCounter += OverflowCount * TIMER_PERIOD;
 
-#ifdef DEBUG_DMX_DBG1_3
-	//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET);
-	//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET);
-	//printf("FBR> c2:%d c1:%d nc:%d bt:%d\r\n", Counter2, Counter1, NetCounter, BreakTime);
-
-#endif
 	if (NetCounter > BreakTime) {
 		/* Set flags that Break is detected */
 		BreakFlag = 1;
@@ -106,11 +98,10 @@ static void first_break_rising(uint32_t OverflowCount)
 
 		/* Enable falling edge interrupt */
 		__HAL_TIM_ENABLE_IT(&htim1, TIM_IT_CC1);
-//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET); //+h24
+
 		/* Remember overflows at start of MAB */
 		MABOverflowCount = OverflowCount;
-	}
-	else {
+	} else {
 
 		/*
 		 * Break is too short for correct DMX packet. So, edge
@@ -121,14 +112,16 @@ static void first_break_rising(uint32_t OverflowCount)
 	}
 }
 
-static bool next_break_rising(uint32_t OverflowCount)
-{
+static bool next_break_rising(uint32_t OverflowCount) {
 	uint32_t NetCounter;
 
 	/* MABRising - NextBreakFalling */
 	NetCounter = (Counter2 - Counter4) & TIMER_PERIOD;
 	/* with regard to GlobalOverflowCount and BreakOverflowCount  */
 	NetCounter += (OverflowCount - BreakOverflowCount) * TIMER_PERIOD;
+
+	// *h24 /////// was bug in org. driver ...never cleared ///////////
+	DataCorruptFlag = 0;
 
 	/* If Break is too short */
 	if (NetCounter <= BreakTime) {
@@ -160,8 +153,7 @@ static bool next_break_rising(uint32_t OverflowCount)
 }
 
 /* It is rising edge __/ . It is end of Break and start of MAB  */
-static void rising_edge(void)
-{
+static void rising_edge(void) {
 	uint32_t OverflowCount = GlobalOverflowCount;
 
 	/* Store MAB Rising Edge Counter */
@@ -170,12 +162,8 @@ static void rising_edge(void)
 	/* Disable rising edge interrupt */
 	__HAL_TIM_DISABLE_IT(&htim1, TIM_FLAG_CC2);
 
-//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET); //+h24
-
-
 	/* No Breaks received yet, it is first */
-	if (InitBreakFlag == 0)
-	{
+	if (InitBreakFlag == 0) {
 		/* Check First Break time etc. */
 		first_break_rising(OverflowCount);
 		return;
@@ -184,22 +172,19 @@ static void rising_edge(void)
 	/*
 	 * Check Next Break time, then check Break to Break. If it is correct,
 	 * then previous received packet can be used
-         */
-	if (next_break_rising(OverflowCount))
-	{
+	 */
+	if (next_break_rising(OverflowCount)) {
 		/* Set Flag that Packet is ready */
 		PacketFlag = 1;
-	}
-	else {
+
+	} else {
 		/* Ignore previously received packet */
 		PacketLength = 0;
 	}
 }
 
-
 /* Falling edge is end of MAB */
-static void falling_edge(void)
-{
+static void falling_edge(void) {
 	uint32_t NetCounter;
 	uint32_t OverflowCount = GlobalOverflowCount;
 
@@ -214,15 +199,6 @@ static void falling_edge(void)
 	/* Total time */
 	NetCounter += (OverflowCount - MABOverflowCount) * TIMER_PERIOD;
 
-#ifdef DEBUG_DMX_DBG1_3
-	HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET);
-#endif
-#ifdef DEBUG_DMX_PRINTF_4
-	printf("FE > bf:%d nc:%d\r\n", BreakFlag, NetCounter);
-#endif
-
-
 	/* Return if correct Break was not detected previously */
 	if (BreakFlag == 0)
 		return;
@@ -231,45 +207,35 @@ static void falling_edge(void)
 		/* Got correct MAB, ready to receive slots */
 		MABFlag = 1;
 		BreakFlag = 0;
-	}
-	else {
+	} else {
 		/* Too short MAB, so clear and wait for new Break (UART FE) */
 		GlobalOverflowCount = 0;
 		BreakFlag = 0;
 		InitBreakFlag = 0;
 	}
-
-#ifdef DEBUG_DMX_PRINTF_4
-	printf("FE > bf:%d mabf:%d gofc:%d ibf:%d\r\n", BreakFlag, MABFlag, GlobalOverflowCount, InitBreakFlag);
-#endif
-
-
 }
 
 /* Frame Error is detected by UART after 10bits of low level. So it is Break */
-static void frame_error_handler(uint32_t Counter)
-{
-
+static void frame_error_handler(uint32_t Counter) {
 
 	/* actually FE is 40 usec after Break start... */
 
 	if ((BreakFlag == 0) && (MABFlag == 0)) {
 		/* Store first Break start counter */
 		Counter1 = Counter;
-	}
-	else if (MABFlag == 1) {
+	} else if (MABFlag == 1) {
 		/* It is next Break, store NextBreakStart counter */
 		Counter4 = Counter;
 		/* Store Overflows, it will be used to calculate time between Breaks */
 		BreakOverflowCount = GlobalOverflowCount;
-	}
-	else
+	} else
 		return;
 
 	/*
 	 * Save already received packet length, but it must be used only when
 	 * PacketFlag will be set (after checking Break time)
 	 */
+
 	PacketLength = DMXChannelCount;
 	/* Prepare counter for receiving slots of next packet */
 	DMXChannelCount = 0;
@@ -278,23 +244,13 @@ static void frame_error_handler(uint32_t Counter)
 	__HAL_TIM_CLEAR_FLAG(&htim1, TIM_IT_CC1);
 	__HAL_TIM_CLEAR_FLAG(&htim1, TIM_IT_CC2);
 	__HAL_TIM_ENABLE_IT(&htim1, TIM_IT_CC2);
+
 }
 
-static void receive_data_handler(uint32_t Data)
-{
-
-#ifdef DEBUG_DMX_DBG1_3
-	//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET);
-	//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET);
-#endif
-#ifdef DEBUG_DMX_DBG1_4
-	//printf("RDH> dcf:%d dcc:%d mabf:%d ibf:%d goc:%d\r\n", DataCorruptFlag, DMXChannelCount, MABFlag, InitBreakFlag, GlobalOverflowCount);
-#endif
+static void receive_data_handler(uint32_t Data) {
 
 	/* Do not receice data without correct MAB */
-	if (MABFlag == 0){
-
-
+	if (MABFlag == 0) {
 		return;
 	}
 
@@ -302,8 +258,9 @@ static void receive_data_handler(uint32_t Data)
 	 * MABFlag is still set at second MAB. So, MAB Falling interrupt
 	 * sets DataCorruptFlag if second MAB is too short
 	 */
-	if (DataCorruptFlag == 1)
+	if (DataCorruptFlag == 1){
 		return;
+	}
 
 	/* Drop packet if first byte is not 0x00 */
 	if ((DMXChannelCount == 0) && (Data != 0x00)) {
@@ -323,16 +280,12 @@ static void receive_data_handler(uint32_t Data)
 	Packet[DMXChannelCount++] = Data;
 }
 
-void dmx_uart_handler(UART_HandleTypeDef *huart)
-{
+void dmx_uart_handler(UART_HandleTypeDef *huart) {
 	uint32_t Counter = __HAL_TIM_GET_COUNTER(&htim1);
 //-h24	uint32_t StatusRead = huart->Instance->SR;
 	uint32_t StatusRead = huart->Instance->ISR; //+h24
 //-h24	uint32_t Data = huart->Instance->DR;
 	uint32_t Data = huart->Instance->RDR;		//+h24
-
-	//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET); //+h24
-
 
 	/* Frame Error interrupt happens after 10 bits of 0 (~40us), so it is
 	 * after first 40 us of Break */
@@ -349,49 +302,17 @@ void dmx_uart_handler(UART_HandleTypeDef *huart)
 	}
 }
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	GlobalOverflowCount++;
 }
 
-void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
-{
-
-
-  if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1){
-#ifdef DEBUG_DMX_DBG1_2
-		HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET); //+h24
-#endif
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
+	if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) {
+		DBG_OUT1_L();    //**//**//
 		falling_edge();
-#ifdef DEBUG_DMX_DBG1_2
-		HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET); //+h24
-#endif
-
-
-  }
-  else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2){
-	  	//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET); //+h24
+	} else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) {
+		DBG_OUT1_H();    //**//**//
 		rising_edge();
-
-  }
-
-  //HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET); //+h24
-
+	}
 }
-
-/* Init DMX variables */
-void dmx_init_h24(void){
-#ifdef DEBUG_DMX_DBG1
-		//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET); //+h24
-		//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET); //+h24
-#endif
-
-	//__disable_irq();
-	GlobalOverflowCount = 0;
-	BreakFlag = 0;
-	InitBreakFlag = 0;
-	//__enable_irq();
-
-}
-
 

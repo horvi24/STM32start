@@ -18,7 +18,7 @@ bool core_init(void) {
 	return true;
 }
 
-
+/* Non-Blocking receive entire DMX packet */
 void core_process_h24(void) {
 	uint16_t len;
 
@@ -26,9 +26,8 @@ void core_process_h24(void) {
 
 	if (len == 0) {
 		my92xx_update();
-	}
-	else {
-	    DBG_OUT1_H();  DBG_OUT1_L();    //**//**//
+	} else {
+		DBG_OUT5();
 
 		led_set(0, curve_fn(packet[DMX_ADDR_LED_RGBW_PWM]));
 		led_set(1, curve_fn(packet[DMX_ADDR_LED_RGBW_PWM + 1]));
@@ -40,36 +39,29 @@ void core_process_h24(void) {
 		my92xx_setChannel(MY92XX_B1, packet[DMX_ADDR_LED_RGBW_MY92 + 2]);
 		my92xx_setChannel(MY92XX_W1, packet[DMX_ADDR_LED_RGBW_MY92 + 3]);
 
-		my92xx_setChannel(MY92XX_R2, packet[DMX_ADDR_LED_RGBW_MY92+4]);
-		my92xx_setChannel(MY92XX_G2, packet[DMX_ADDR_LED_RGBW_MY92+5]);
-		my92xx_setChannel(MY92XX_B2, packet[DMX_ADDR_LED_RGBW_MY92+6]);
-		my92xx_setChannel(MY92XX_W2, packet[DMX_ADDR_LED_RGBW_MY92+7]);
+		my92xx_setChannel(MY92XX_R2, packet[DMX_ADDR_LED_RGBW_MY92 + 4]);
+		my92xx_setChannel(MY92XX_G2, packet[DMX_ADDR_LED_RGBW_MY92 + 5]);
+		my92xx_setChannel(MY92XX_B2, packet[DMX_ADDR_LED_RGBW_MY92 + 6]);
+		my92xx_setChannel(MY92XX_W2, packet[DMX_ADDR_LED_RGBW_MY92 + 7]);
 
-		my92xx_setChannel(MY92XX_R3, packet[DMX_ADDR_LED_RGBW_MY92+8]);
-		my92xx_setChannel(MY92XX_G3, packet[DMX_ADDR_LED_RGBW_MY92+9]);
-		my92xx_setChannel(MY92XX_B3, packet[DMX_ADDR_LED_RGBW_MY92+10]);
-		my92xx_setChannel(MY92XX_W3, packet[DMX_ADDR_LED_RGBW_MY92+11]);
+		my92xx_setChannel(MY92XX_R3, packet[DMX_ADDR_LED_RGBW_MY92 + 8]);
+		my92xx_setChannel(MY92XX_G3, packet[DMX_ADDR_LED_RGBW_MY92 + 9]);
+		my92xx_setChannel(MY92XX_B3, packet[DMX_ADDR_LED_RGBW_MY92 + 10]);
+		my92xx_setChannel(MY92XX_W3, packet[DMX_ADDR_LED_RGBW_MY92 + 11]);
 
-		my92xx_setChannel(MY92XX_R4, packet[DMX_ADDR_LED_RGBW_MY92+12]);
-		my92xx_setChannel(MY92XX_G4, packet[DMX_ADDR_LED_RGBW_MY92+13]);
-		my92xx_setChannel(MY92XX_B4, packet[DMX_ADDR_LED_RGBW_MY92+14]);
-		my92xx_setChannel(MY92XX_W4, packet[DMX_ADDR_LED_RGBW_MY92+15]);
+		my92xx_setChannel(MY92XX_R4, packet[DMX_ADDR_LED_RGBW_MY92 + 12]);
+		my92xx_setChannel(MY92XX_G4, packet[DMX_ADDR_LED_RGBW_MY92 + 13]);
+		my92xx_setChannel(MY92XX_B4, packet[DMX_ADDR_LED_RGBW_MY92 + 14]);
+		my92xx_setChannel(MY92XX_W4, packet[DMX_ADDR_LED_RGBW_MY92 + 15]);
 
 		my92xx_update();
-
-		if (!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)) {
-			printf("/%3d/ %3d %3d %3d %3d\r\n", DMX_ADDR_LED_RGBW_PWM,
-					packet[DMX_ADDR_LED_RGBW_PWM], packet[DMX_ADDR_LED_RGBW_PWM + 1],
-					packet[DMX_ADDR_LED_RGBW_PWM + 2], packet[DMX_ADDR_LED_RGBW_PWM + 3]);
-			dbg_dumppacket(packet, len);
-		}
 	}
 }
 
+/* Blocking receive entire DMX packet */
 void core_process(void) {
-	uint16_t len;
 
-	len = dmx_receive(packet);
+	dmx_receive(packet);
 
 	led_set(0, curve_fn(packet[DMX_ADDR_LED_RGBW_PWM]));
 	led_set(1, curve_fn(packet[DMX_ADDR_LED_RGBW_PWM + 1]));
@@ -82,13 +74,4 @@ void core_process(void) {
 	my92xx_setChannel(MY92XX_W1, packet[DMX_ADDR_LED_RGBW_MY92 + 3]);
 
 	my92xx_update();
-
-	if (!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)) {
-		printf("/%3d/ %3d %3d %3d %3d\r\n", DMX_ADDR_LED_RGBW_PWM,
-				packet[DMX_ADDR_LED_RGBW_PWM], packet[DMX_ADDR_LED_RGBW_PWM + 1],
-				packet[DMX_ADDR_LED_RGBW_PWM + 2], packet[DMX_ADDR_LED_RGBW_PWM + 3]);
-		dbg_dumppacket(packet, len);
-
-	}
-
 }

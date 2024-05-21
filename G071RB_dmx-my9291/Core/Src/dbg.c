@@ -43,7 +43,6 @@ void RGBW_red(void) {
     uint8_t i = 0, up = 1;
     while (HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)) {
 
-        //DBG_OUT1_H();  DBG_OUT1_L();    //**//**//
         led_set(MY92XX_R1, i);
         my92xx_setChannel(MY92XX_R1, i);
         my92xx_setChannel(MY92XX_R2, i);
