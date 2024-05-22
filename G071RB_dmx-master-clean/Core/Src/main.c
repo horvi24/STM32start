@@ -15,13 +15,12 @@
  *
  ******************************************************************************
  */
-
 /*
   ******************************************************************************
-  * TIM1	DMX Receiver - Break/MAB	IRQ 	IC1, IC2
+  * TIM1
   * TIM2	DMX	Transmiter - Break		IRQ
-  * TIM3	LED PWM RGBW						CH1, CH2, CH3, CH4
-  * TIM14	DMR Transmiter - MAB		IRQ		CH1
+  * TIM3	DMR Transmiter - MAB		IRQ		CH1
+  * TIM14
   *
   *
   * USART1	DMX 250kbps 8B-2SB-0P		IRQ
@@ -36,13 +35,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "core.h"
-#include "dmx_transmitter.h"
 
-//#include "curve.h"
-//#include "led.h"
-
-//#include "usb_device.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,7 +45,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-//my92xx _my92xx = my92xx(MY92XX_MODEL, MY92XX_CHIPS, MY92XX_DI_PIN, MY92XX_DCKI_PIN, MY92XX_COMMAND_DEFAULT);
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -61,10 +54,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
-TIM_HandleTypeDef htim14;
 
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
@@ -77,12 +68,11 @@ UART_HandleTypeDef huart2;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
-static void MX_TIM3_Init(void);
 static void MX_USART1_UART_Init(void);
-static void MX_TIM1_Init(void);
-static void MX_TIM14_Init(void);
 static void MX_TIM2_Init(void);
+static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
+
 #ifdef __GNUC__
 /* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
  set to 'Yes') calls __io_putchar() */
@@ -95,12 +85,13 @@ static void MX_TIM2_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-PUTCHAR_PROTOTYPE {
-    /* Place your implementation of fputc here */
-    /* e.g. write a character to the USART1 and Loop until the end of transmission */
-    HAL_UART_Transmit(&huart2, (uint8_t*) &ch, 1, 0xFFFF);
 
-    return ch;
+PUTCHAR_PROTOTYPE {
+	/* Place your implementation of fputc here */
+	/* e.g. write a character to the USART1 and Loop until the end of transmission */
+	HAL_UART_Transmit(&huart2, (uint8_t*) &ch, 1, 0xFFFF);
+
+	return ch;
 }
 
 /* USER CODE END 0 */
@@ -129,47 +120,48 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
+
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
-  MX_TIM3_Init();
   MX_USART1_UART_Init();
-  MX_TIM1_Init();
-  MX_TIM14_Init();
   MX_TIM2_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
-    if (!core_init())
-        Error_Handler();
+	uint8_t test_packet[512];
+	for (int i = 0; i < sizeof(test_packet); i++)
+		test_packet[i] = i & 0xFF;
 
-    uint8_t test_packet[512];
-    for (int i=0; i<sizeof(test_packet); i++)
-      test_packet[i] = i & 0xFF;
+	//dbg_dumppacket(test_packet,512);
 
 
-    printf("\r\nDMX512 transmiter\r\n");
-    printf("beta 0.1 (21/05/24)\r\n");
-
+	HAL_Delay(500); //delay for terminal
+	printf("\r\nDMX512 transmiter (clean) 22/05/24\r\n");
+	//printf("Dev id. ID-%u UID-%u-%u-%u\r\n", HAL_GetDEVID(), HAL_GetUIDw2, HAL_GetUIDw1, HAL_GetUIDw0);
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+	DBG_OUT1();
+	//uint8_t* msg = "hello world\r\n";
+	//HAL_UART_Transmit(&huart1, msg, 13, 100);
 
-    while (1) {
+	//USART2->RDR = 'A';
 
-        dmx_send(test_packet, sizeof(test_packet));
+	while (1) {
 
-        //core_process_h24();
-        //RGBW_red();
+
+		dmx_send(test_packet, sizeof(test_packet));
+		HAL_Delay(1000);
 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
-    }
+	}
   /* USER CODE END 3 */
 }
 
@@ -220,91 +212,6 @@ void SystemClock_Config(void)
 }
 
 /**
-  * @brief TIM1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM1_Init(void)
-{
-
-  /* USER CODE BEGIN TIM1_Init 0 */
-
-  /* USER CODE END TIM1_Init 0 */
-
-  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-  TIM_MasterConfigTypeDef sMasterConfig = {0};
-  TIM_IC_InitTypeDef sConfigIC = {0};
-
-  /* USER CODE BEGIN TIM1_Init 1 */
-
-  /* USER CODE END TIM1_Init 1 */
-  htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 0;
-  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 65535;
-  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim1.Init.RepetitionCounter = 0;
-  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_TIM_IC_Init(&htim1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterOutputTrigger2 = TIM_TRGO2_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_FALLING;
-  sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
-  sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
-  sConfigIC.ICFilter = 0;
-  if (HAL_TIM_IC_ConfigChannel(&htim1, &sConfigIC, TIM_CHANNEL_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
-  if (HAL_TIM_IC_ConfigChannel(&htim1, &sConfigIC, TIM_CHANNEL_2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM1_Init 2 */
-
-    __HAL_TIM_ENABLE_IT(&htim1, TIM_IT_UPDATE);
-
-    TIM_CCxChannelCmd(htim1.Instance, TIM_CHANNEL_1, TIM_CCx_ENABLE);
-    TIM_CCxChannelCmd(htim1.Instance, TIM_CHANNEL_2, TIM_CCx_ENABLE);
-
-    __HAL_TIM_DISABLE_IT(&htim1, TIM_IT_CC1);
-    __HAL_TIM_DISABLE_IT(&htim1, TIM_IT_CC2);
-
-    __HAL_TIM_CLEAR_FLAG(&htim1, TIM_IT_CC1);
-    __HAL_TIM_CLEAR_FLAG(&htim1, TIM_IT_CC2);
-
-    __HAL_TIM_ENABLE(&htim1);
-
-    /*-h24
-     HAL_NVIC_SetPriority(TIM2_IRQn, 0, 0);
-     HAL_NVIC_EnableIRQ(TIM2_IRQn);
-     */
-    HAL_NVIC_SetPriority(TIM1_CC_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(TIM1_CC_IRQn);
-
-  /* USER CODE END TIM1_Init 2 */
-
-}
-
-/**
   * @brief TIM2 Initialization Function
   * @param None
   * @retval None
@@ -323,9 +230,9 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 48-1;
+  htim2.Init.Prescaler = TIM_CLK_MHZ-1;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 44;
+  htim2.Init.Period = DMX_SLOT + DMX_MBS;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -345,15 +252,14 @@ static void MX_TIM2_Init(void)
   }
   /* USER CODE BEGIN TIM2_Init 2 */
 
-  /* USER CODE BEGIN TIM2_Init 2 */
-  /*
-   * Update flag should be cleaned, to prevent unwanted interrupt. Inerrupt
-   * flag is generated earlier, by following call:
-   * HAL_TIM_Base_Init -> TIM_Base_SetConfig -> TIMx->EGR = TIM_EGR_UG
-   */
-  __HAL_TIM_CLEAR_IT(&htim2, TIM_FLAG_UPDATE);
-  /* Enable interrupts, but don't enable timer counter, to prevent interrupts */
-  __HAL_TIM_ENABLE_IT(&htim2, TIM_IT_UPDATE);
+	 /*
+	   * Update flag should be cleaned, to prevent unwanted interrupt. Inerrupt
+	   * flag is generated earlier, by following call:
+	   * HAL_TIM_Base_Init -> TIM_Base_SetConfig -> TIMx->EGR = TIM_EGR_UG
+	   */
+	  __HAL_TIM_CLEAR_IT(&htim2, TIM_FLAG_UPDATE);
+	  /* Enable interrupts, but don't enable timer counter, to prevent interrupts */
+	  __HAL_TIM_ENABLE_IT(&htim2, TIM_IT_UPDATE);
 
 
   /* USER CODE END TIM2_Init 2 */
@@ -380,9 +286,9 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 48-1;
+  htim3.Init.Prescaler = TIM_CLK_MHZ-1;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 1000;
+  htim3.Init.Period = DMX_BREAK + DMX_MAB;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -394,7 +300,7 @@ static void MX_TIM3_Init(void)
   {
     Error_Handler();
   }
-  if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
+  if (HAL_TIM_OC_Init(&htim3) != HAL_OK)
   {
     Error_Handler();
   }
@@ -404,89 +310,29 @@ static void MX_TIM3_Init(void)
   {
     Error_Handler();
   }
-  sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_LOW;
+  sConfigOC.OCMode = TIM_OCMODE_TIMING;
+  sConfigOC.Pulse = DMX_BREAK;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigOC.Pulse = 240;
-  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigOC.Pulse = 0;
-  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
+  if (HAL_TIM_OC_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
   {
     Error_Handler();
   }
   /* USER CODE BEGIN TIM3_Init 2 */
 
+	 /*
+	   * Update flag should be cleaned, to prevent unwanted interrupt. Inerrupt
+	   * flag is generated earlier, by following call:
+	   * HAL_TIM_Base_Init -> TIM_Base_SetConfig -> TIMx->EGR = TIM_EGR_UG
+	   */
+	  __HAL_TIM_CLEAR_IT(&htim3, TIM_FLAG_UPDATE);
+	  /* Enable interrupts, but don't enable timer counter, to prevent interrupts */
+	  __HAL_TIM_ENABLE_IT(&htim3, TIM_IT_UPDATE);
+	  __HAL_TIM_ENABLE_IT(&htim3, TIM_IT_CC1);
+
+
   /* USER CODE END TIM3_Init 2 */
   HAL_TIM_MspPostInit(&htim3);
-
-}
-
-/**
-  * @brief TIM14 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM14_Init(void)
-{
-
-  /* USER CODE BEGIN TIM14_Init 0 */
-
-  /* USER CODE END TIM14_Init 0 */
-
-  TIM_OC_InitTypeDef sConfigOC = {0};
-
-  /* USER CODE BEGIN TIM14_Init 1 */
-
-  /* USER CODE END TIM14_Init 1 */
-  htim14.Instance = TIM14;
-  htim14.Init.Prescaler = 48-1;
-  htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim14.Init.Period = 104;
-  htim14.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim14.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim14) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_TIM_OC_Init(&htim14) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigOC.OCMode = TIM_OCMODE_TIMING;
-  sConfigOC.Pulse = 92;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  if (HAL_TIM_OC_ConfigChannel(&htim14, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM14_Init 2 */
-
-  /*
-     * Update flag should be cleaned, to prevent unwanted interrupt. Inerrupt
-     * flag is generated earlier, by following call:
-     * HAL_TIM_Base_Init -> TIM_Base_SetConfig -> TIMx->EGR = TIM_EGR_UG
-     */
-    __HAL_TIM_CLEAR_IT(&htim3, TIM_FLAG_UPDATE);
-    /* Enable interrupts, but don't enable timer counter, to prevent interrupts */
-    __HAL_TIM_ENABLE_IT(&htim3, TIM_IT_UPDATE);
-    __HAL_TIM_ENABLE_IT(&htim3, TIM_IT_CC1);
-
-
-  /* USER CODE END TIM14_Init 2 */
-  HAL_TIM_MspPostInit(&htim14);
 
 }
 
@@ -510,13 +356,13 @@ static void MX_USART1_UART_Init(void)
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_2;
   huart1.Init.Parity = UART_PARITY_NONE;
-  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.Mode = UART_MODE_TX;
   huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart1.Init.OverSampling = UART_OVERSAMPLING_16;
   huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
   huart1.Init.ClockPrescaler = UART_PRESCALER_DIV1;
   huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
-  if (HAL_RS485Ex_Init(&huart1, UART_DE_POLARITY_HIGH, 0, 0) != HAL_OK)
+  if (HAL_UART_Init(&huart1) != HAL_OK)
   {
     Error_Handler();
   }
@@ -533,8 +379,6 @@ static void MX_USART1_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART1_Init 2 */
-    __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
-    __HAL_UART_ENABLE_IT(&huart1, UART_IT_ERR);
 
   /* USER CODE END USART1_Init 2 */
 
@@ -610,11 +454,13 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, DBG_OUT4_Pin|DBG_OUT3_Pin|DBG_OUT5_Pin|LED_DCKI_Pin
-                          |LED_DI_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, DBG_OUT4_Pin|DBG_OUT3_Pin|DBG_OUT5_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, DBG_OUT2_Pin|DBG_OUT1_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(DMX_DA_GPIO_Port, DMX_DA_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : SW_BLUE_Pin */
   GPIO_InitStruct.Pin = SW_BLUE_Pin;
@@ -622,17 +468,15 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(SW_BLUE_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : LED_GREEN_Pin */
-  GPIO_InitStruct.Pin = LED_GREEN_Pin;
+  /*Configure GPIO pins : LED_GREEN_Pin DMX_DA_Pin */
+  GPIO_InitStruct.Pin = LED_GREEN_Pin|DMX_DA_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LED_GREEN_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : DBG_OUT4_Pin DBG_OUT3_Pin DBG_OUT5_Pin LED_DCKI_Pin
-                           LED_DI_Pin */
-  GPIO_InitStruct.Pin = DBG_OUT4_Pin|DBG_OUT3_Pin|DBG_OUT5_Pin|LED_DCKI_Pin
-                          |LED_DI_Pin;
+  /*Configure GPIO pins : DBG_OUT4_Pin DBG_OUT3_Pin DBG_OUT5_Pin */
+  GPIO_InitStruct.Pin = DBG_OUT4_Pin|DBG_OUT3_Pin|DBG_OUT5_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -646,9 +490,6 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
-    my92xx_init(MY92XX_MODEL, MY92XX_CHIPS, MY92XX_COMMAND_DEFAULT);
-    my92xx_init_blue();
-
 /* USER CODE END MX_GPIO_Init_2 */
 }
 
@@ -663,11 +504,10 @@ static void MX_GPIO_Init(void)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-    /* User can add his own implementation to report the HAL error return state */
-    __disable_irq();
-    while (1) {
-        printf("error handler\r\n"); //+h24
-    }
+	/* User can add his own implementation to report the HAL error return state */
+	__disable_irq();
+	while (1) {
+	}
   /* USER CODE END Error_Handler_Debug */
 }
 
