@@ -15,6 +15,7 @@
  *
  ******************************************************************************
  */
+//https://github.com/aleksandrgilfanov/stm32f4-dmx-transmitter
 /*
   ******************************************************************************
   * TIM1
@@ -156,7 +157,7 @@ int main(void)
 
 
 		dmx_send(test_packet, sizeof(test_packet));
-		HAL_Delay(1000);
+		HAL_Delay(100);
 
     /* USER CODE END WHILE */
 
@@ -313,7 +314,7 @@ static void MX_TIM3_Init(void)
   sConfigOC.OCMode = TIM_OCMODE_TIMING;
   sConfigOC.Pulse = DMX_BREAK;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  sConfigOC.OCFastMode = TIM_OCFAST_ENABLE;
   if (HAL_TIM_OC_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
   {
     Error_Handler();
@@ -332,7 +333,6 @@ static void MX_TIM3_Init(void)
 
 
   /* USER CODE END TIM3_Init 2 */
-  HAL_TIM_MspPostInit(&htim3);
 
 }
 

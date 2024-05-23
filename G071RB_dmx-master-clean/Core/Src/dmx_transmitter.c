@@ -1,3 +1,4 @@
+//https://github.com/aleksandrgilfanov/stm32f4-dmx-transmitter
 #include "main.h"
 
 //#include "dmx_transmitter.h"
@@ -35,7 +36,7 @@ void dmx_send(const uint8_t *slots, uint16_t size)
 	 */
 
 	/* So, enable this timer */
-	__HAL_TIM_ENABLE(&htim3);
+ 	__HAL_TIM_ENABLE(&htim3);
 
 	/* Wait until transmission of whole DMX packet is finished */
 	while (slots_ptr != NULL) {};
@@ -48,15 +49,15 @@ void dmx_slot(void)
 	 * Each slot is sent in Update Interrupt of TIM2. So, period of TIM2 is
 	 * time, needed for 11bits of slot (44us) and Mark Between Slots (0..1s)
 	 */
-
+    DBG_OUT5();
 	if (slots_sent < slots_count){
 		DBG_OUT4();
 
-		USART1->RDR = slots_ptr[slots_sent++];
+		USART1->TDR = slots_ptr[slots_sent++];
 	}
 	else {
 		DBG_OUT5();
-		printf("5");
+		//printf("5");
 
 		/* Stop timer when all slots are sent */
 		TIM2->CR1 &= ~(TIM_CR1_CEN);
@@ -71,6 +72,7 @@ void dmx_slot(void)
 void dmx_reset_sequence(void)
 {
 	//print_int(TIM3->SR);
+    DBG_OUT1();
 
 	if (TIM3->SR & TIM_IT_UPDATE)						/*!<Update interrupt enable */
 	{
@@ -82,7 +84,8 @@ void dmx_reset_sequence(void)
 		TIM3->CNT = 0;
 
 		/* Send start code 0x00 */
-		USART1->RDR = 0x00;
+		USART1->TDR = 0x00;
+
 
 		/* Start timer for sending slots */
 		__HAL_TIM_ENABLE(&htim2);
@@ -96,6 +99,11 @@ void dmx_reset_sequence(void)
 		GPIO_InitStruct.Pin = GPIO_PIN_4;
 		GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
 		HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+        //+h24 ???
+
+		__HAL_TIM_DISABLE_IT(&htim3, TIM_IT_CC1);
+		//+h24 ???
 
 	}
 }
