@@ -62,6 +62,8 @@ UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+uint8_t test_packet[512];
+uint8_t i = 0, up = 1;
 
 /* USER CODE END PV */
 
@@ -93,6 +95,32 @@ PUTCHAR_PROTOTYPE {
 	HAL_UART_Transmit(&huart2, (uint8_t*) &ch, 1, 0xFFFF);
 
 	return ch;
+}
+
+
+void DMX_breath(uint8_t channel) {
+    while (!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin));//{
+
+    	test_packet[channel] = i & 0xFF;
+    	test_packet[channel+6] = (0xFF-i) & 0xFF;
+
+    	test_packet[channel] = i & 0xFF;
+    	test_packet[channel+6] = (0xFF-i) & 0xFF;
+
+        HAL_Delay(1);
+
+
+
+        if (up) {
+            i = i + 10;
+            if (i > 244)
+                up = 0;
+        } else {
+            i = i - 10;
+            if (i < 10)
+                up = 1;
+        }
+    //}
 }
 
 /* USER CODE END 0 */
@@ -132,9 +160,8 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
-	uint8_t test_packet[512];
 	for (int i = 0; i < sizeof(test_packet); i++)
-		test_packet[i] = i & 0xFF;
+		test_packet[i] = 0;//i & 0xFF;
 
 	//dbg_dumppacket(test_packet,512);
 
@@ -147,17 +174,18 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	DBG_OUT1();
+
 	//uint8_t* msg = "hello world\r\n";
 	//HAL_UART_Transmit(&huart1, msg, 13, 100);
 
 	//USART2->RDR = 'A';
-
 	while (1) {
 
-
+		DBG_OUT1_H();
 		dmx_send(test_packet, sizeof(test_packet));
-		HAL_Delay(100);
+		DMX_breath(0);
+
+		//HAL_Delay(100);
 
     /* USER CODE END WHILE */
 
@@ -289,7 +317,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = TIM_CLK_MHZ-1;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = DMX_BREAK + DMX_MAB;
+  htim3.Init.Period = DMX_BREAK-16 + DMX_MAB+12;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -312,9 +340,9 @@ static void MX_TIM3_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_TIMING;
-  sConfigOC.Pulse = DMX_BREAK;
+  sConfigOC.Pulse = DMX_BREAK-16;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_ENABLE;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_OC_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
   {
     Error_Handler();
@@ -326,13 +354,18 @@ static void MX_TIM3_Init(void)
 	   * flag is generated earlier, by following call:
 	   * HAL_TIM_Base_Init -> TIM_Base_SetConfig -> TIMx->EGR = TIM_EGR_UG
 	   */
-	  __HAL_TIM_CLEAR_IT(&htim3, TIM_FLAG_UPDATE);
+	  //__HAL_TIM_CLEAR_IT(&htim3, TIM_FLAG_UPDATE);
+	  //__HAL_TIM_CLEAR_IT(&htim3, TIM_IT_CC1);//h24
+
+
 	  /* Enable interrupts, but don't enable timer counter, to prevent interrupts */
 	  __HAL_TIM_ENABLE_IT(&htim3, TIM_IT_UPDATE);
 	  __HAL_TIM_ENABLE_IT(&htim3, TIM_IT_CC1);
+	  //__HAL_TIM_ENABLE_IT(&htim3, TIM_IT_CC2);
 
 
   /* USER CODE END TIM3_Init 2 */
+  HAL_TIM_MspPostInit(&htim3);
 
 }
 

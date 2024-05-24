@@ -170,6 +170,7 @@ void TIM3_IRQHandler(void)
   /* USER CODE BEGIN TIM3_IRQn 1 */
   __HAL_TIM_CLEAR_IT(&htim3, TIM_IT_UPDATE);
   __HAL_TIM_CLEAR_IT(&htim3, TIM_IT_CC1);
+  //__HAL_TIM_CLEAR_IT(&htim3, TIM_IT_CC2);
 
 
   /* USER CODE END TIM3_IRQn 1 */

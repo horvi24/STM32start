@@ -54,6 +54,8 @@ extern "C" {
 
 /* USER CODE END EM */
 
+void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
@@ -63,10 +65,10 @@ void Error_Handler(void);
 
 /* Private defines -----------------------------------------------------------*/
 #define DMX_SLOT 44
+#define TIM_CLK_MHZ 48
+#define DMX_BREAK 176
 #define DMX_MBS 0
 #define DMX_MAB 12
-#define DMX_BREAK 92
-#define TIM_CLK_MHZ 48
 #define SW_BLUE_Pin GPIO_PIN_13
 #define SW_BLUE_GPIO_Port GPIOC
 #define MCO_Pin GPIO_PIN_0
