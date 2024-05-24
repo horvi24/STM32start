@@ -99,7 +99,7 @@ PUTCHAR_PROTOTYPE {
 
 
 void DMX_breath(uint8_t channel) {
-    while (!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin));//{
+    while (!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)){};
 
     	test_packet[channel] = i & 0xFF;
     	test_packet[channel+6] = (0xFF-i) & 0xFF;
@@ -162,23 +162,17 @@ int main(void)
 
 	for (int i = 0; i < sizeof(test_packet); i++)
 		test_packet[i] = 0;//i & 0xFF;
-
-	//dbg_dumppacket(test_packet,512);
-
-
 	HAL_Delay(500); //delay for terminal
-	printf("\r\nDMX512 transmiter (clean) 22/05/24\r\n");
-	//printf("Dev id. ID-%u UID-%u-%u-%u\r\n", HAL_GetDEVID(), HAL_GetUIDw2, HAL_GetUIDw1, HAL_GetUIDw0);
+
+	//dbg_dumppacket(test_packet,513);
+	printf("\r\nDMX512 transmiter (TIM2, TIM3) v1.0 24/05/24\r\n");
+	printf("\r\nfrom https://github.com/aleksandrgilfanov/stm32f4-dmx-transmitter\r\n");
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-	//uint8_t* msg = "hello world\r\n";
-	//HAL_UART_Transmit(&huart1, msg, 13, 100);
-
-	//USART2->RDR = 'A';
 	while (1) {
 
 		DBG_OUT1_H();
@@ -365,7 +359,6 @@ static void MX_TIM3_Init(void)
 
 
   /* USER CODE END TIM3_Init 2 */
-  HAL_TIM_MspPostInit(&htim3);
 
 }
 
