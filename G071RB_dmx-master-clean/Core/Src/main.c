@@ -109,8 +109,6 @@ void DMX_breath(uint8_t channel) {
 
         HAL_Delay(1);
 
-
-
         if (up) {
             i = i + 10;
             if (i > 244)
