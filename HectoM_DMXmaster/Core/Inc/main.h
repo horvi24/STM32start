@@ -31,6 +31,11 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
+#include <stdint.h>
+
+#include "dbg.h"
+#include "dmx_transmitter.h"
 
 /* USER CODE END Includes */
 
@@ -70,6 +75,8 @@ void Error_Handler(void);
 #define DBG_TX2_GPIO_Port GPIOA
 #define DBG_RX2_Pin GPIO_PIN_3
 #define DBG_RX2_GPIO_Port GPIOA
+#define DBG_OUT1_Pin GPIO_PIN_15
+#define DBG_OUT1_GPIO_Port GPIOB
 #define DMX_DE_Pin GPIO_PIN_12
 #define DMX_DE_GPIO_Port GPIOA
 #define SW1_Pin GPIO_PIN_0

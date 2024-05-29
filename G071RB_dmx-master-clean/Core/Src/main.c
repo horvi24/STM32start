@@ -24,7 +24,7 @@
   * TIM14
   *
   *
-  * USART1	DMX 250kbps 8B-2SB-0P		IRQ
+  * USART1	DMX 250kbps 8B-2SB-0P		IRQ from TIM2
   * USART2	DBG 250kbps 9B-1SB-0P
   *
   ******************************************************************************
