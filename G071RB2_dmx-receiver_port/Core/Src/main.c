@@ -22,12 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "core.h"
-//#include "curve.h"
-//#include "led.h"
 
-
-
-//#include "usb_device.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -120,28 +115,12 @@ int main(void)
   MX_TIM3_Init();
   MX_USART1_UART_Init();
   MX_TIM1_Init();
+
   /* USER CODE BEGIN 2 */
   if (!core_init())
     Error_Handler();
 
-  printf("\r\nDMX512-RGBWpwm receiver (14/05/24) b0.2\r\n"); //+h24
-
-  //HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET); //+h24
-/*
-    uint8_t tmpR=0;
-    uint8_t tmpG=0;
-    uint8_t tmpB=0;
-    uint8_t tmpW=255;
-
-	led_set(0, curve_fn(tmpR));
-	led_set(1, curve_fn(tmpG));
-	led_set(2, curve_fn(tmpB));
-	led_set(3, curve_fn(tmpW));
-
-	printf("/fix  / %d %d %d %d\r\n", tmpR, tmpG, tmpB, tmpW);
-	printf("/curve/ %d %d %d %d\r\n", curve_fn(tmpR), curve_fn(tmpG), curve_fn(tmpB), curve_fn(tmpW));
-*/
-
+  printf("\r\nDMX512-RGBW pwm (29/05/24)\r\n"); //+h24
 
   /* USER CODE END 2 */
 

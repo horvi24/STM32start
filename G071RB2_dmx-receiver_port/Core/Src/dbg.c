@@ -1,16 +1,8 @@
-//#include <stdarg.h>
-//#include "stdio.h"
-//#include <string.h>
 
 #include <dbg.h>
-//#include "usbd_cdc_if.h"
 #include "stm32g0xx_hal.h"
 
 static char dbg_buf[512];
-
-void dbg_test(){
-	printf("printf test\r\n");
-}
 
 void dbg_dumppacket(uint8_t *src_packet, uint16_t len)
 {

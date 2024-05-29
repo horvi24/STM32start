@@ -1,7 +1,9 @@
+//https://github.com/aleksandrgilfanov/stm32-dmx-receiver
+
 #include <stdbool.h>
 #include <string.h>
 
-#include "main.h" //+h24
+#include "main.h"
 
 #include "stm32g0xx_hal.h"
 #include "stm32g0xx_hal_tim.h"
@@ -75,7 +77,6 @@ static void first_break_rising(uint32_t OverflowCount)
 
 		/* Enable falling edge interrupt */
 		__HAL_TIM_ENABLE_IT(&htim1, TIM_IT_CC1);
-//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET); //+h24
 		/* Remember overflows at start of MAB */
 		MABOverflowCount = OverflowCount;
 	}
@@ -138,8 +139,6 @@ static void rising_edge(void)
 	/* Disable rising edge interrupt */
 	__HAL_TIM_DISABLE_IT(&htim1, TIM_FLAG_CC2);
 
-//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET); //+h24
-
 	/* No Breaks received yet, it is first */
 	if (InitBreakFlag == 0)
 	{
@@ -191,8 +190,6 @@ static void falling_edge(void)
 		/* Got correct MAB, ready to receive slots */
 		MABFlag = 1;
 		BreakFlag = 0;
-
-
 	}
 	else {
 		/* Too short MAB, so clear and wait for new Break (UART FE) */
@@ -268,13 +265,8 @@ static void receive_data_handler(uint32_t Data)
 void dmx_uart_handler(UART_HandleTypeDef *huart)
 {
 	uint32_t Counter = __HAL_TIM_GET_COUNTER(&htim1);
-//-h24	uint32_t StatusRead = huart->Instance->SR;
-	uint32_t StatusRead = huart->Instance->ISR; //+h24
-//-h24	uint32_t Data = huart->Instance->DR;
-	uint32_t Data = huart->Instance->RDR;		//+h24
-
-	//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET); //+h24
-
+	uint32_t StatusRead = huart->Instance->ISR;
+	uint32_t Data = huart->Instance->RDR;
 
 	/* Frame Error interrupt happens after 10 bits of 0 (~40us), so it is
 	 * after first 40 us of Break */
@@ -306,11 +298,6 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 
   }
   else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2){
-	  	//HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_SET); //+h24
 		rising_edge();
-
   }
-
-  //HAL_GPIO_WritePin(DBG_OUT1_GPIO_Port, DBG_OUT1_Pin, GPIO_PIN_RESET); //+h24
-
-}
+ }
