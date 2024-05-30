@@ -23,6 +23,7 @@
   * TIM3	DMR Transmiter - MAB		IRQ		CH1
   * TIM14
   *
+  * PA4		DMX Tx Break
   *
   * USART1	DMX 250kbps 8B-2SB-0P		IRQ from TIM2
   * USART2	DBG 250kbps 9B-1SB-0P
@@ -163,7 +164,7 @@ int main(void)
 	HAL_Delay(500); //delay for terminal
 
 	//dbg_dumppacket(test_packet,513);
-	printf("\r\nDMX512 transmiter (TIM2, TIM3) v1.0 24/05/24\r\n");
+	printf("\r\nDMX512 transmiter (TIM2, TIM3) v1.1 30/05/24\r\n");
 	printf("\r\nfrom https://github.com/aleksandrgilfanov/stm32f4-dmx-transmitter\r\n");
 
   /* USER CODE END 2 */
@@ -475,7 +476,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, DMX_TX_BREAK_Pin|LED_GREEN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, DBG_OUT4_Pin|DBG_OUT3_Pin|DBG_OUT5_Pin, GPIO_PIN_RESET);
@@ -484,7 +485,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOD, DBG_OUT2_Pin|DBG_OUT1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(DMX_DA_GPIO_Port, DMX_DA_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(DMX_DE_GPIO_Port, DMX_DE_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : SW_BLUE_Pin */
   GPIO_InitStruct.Pin = SW_BLUE_Pin;
@@ -492,8 +493,15 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(SW_BLUE_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LED_GREEN_Pin DMX_DA_Pin */
-  GPIO_InitStruct.Pin = LED_GREEN_Pin|DMX_DA_Pin;
+  /*Configure GPIO pin : DMX_TX_BREAK_Pin */
+  GPIO_InitStruct.Pin = DMX_TX_BREAK_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(DMX_TX_BREAK_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : LED_GREEN_Pin DMX_DE_Pin */
+  GPIO_InitStruct.Pin = LED_GREEN_Pin|DMX_DE_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

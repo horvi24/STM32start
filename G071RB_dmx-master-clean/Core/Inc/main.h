@@ -75,6 +75,8 @@ void Error_Handler(void);
 #define USART2_TX_GPIO_Port GPIOA
 #define USART2_RX_Pin GPIO_PIN_3
 #define USART2_RX_GPIO_Port GPIOA
+#define DMX_TX_BREAK_Pin GPIO_PIN_4
+#define DMX_TX_BREAK_GPIO_Port GPIOA
 #define LED_GREEN_Pin GPIO_PIN_5
 #define LED_GREEN_GPIO_Port GPIOA
 #define DBG_OUT4_Pin GPIO_PIN_10
@@ -87,8 +89,8 @@ void Error_Handler(void);
 #define DBG_OUT2_GPIO_Port GPIOD
 #define DBG_OUT1_Pin GPIO_PIN_9
 #define DBG_OUT1_GPIO_Port GPIOD
-#define DMX_DA_Pin GPIO_PIN_12
-#define DMX_DA_GPIO_Port GPIOA
+#define DMX_DE_Pin GPIO_PIN_12
+#define DMX_DE_GPIO_Port GPIOA
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14

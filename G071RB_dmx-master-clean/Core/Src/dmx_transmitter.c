@@ -22,10 +22,10 @@ void dmx_send(const uint8_t *slots, uint16_t size)
 	 * Break (low level), so set pin to output low.
 	 */
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
-	GPIO_InitStruct.Pin = GPIO_PIN_4;
+	GPIO_InitStruct.Pin = DMX_TX_BREAK_Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+	HAL_GPIO_Init(DMX_TX_BREAK_GPIO_Port, &GPIO_InitStruct);
+	HAL_GPIO_WritePin(DMX_TX_BREAK_GPIO_Port, DMX_TX_BREAK_Pin, GPIO_PIN_RESET);
 
 	/*
 	 * Waiting for Break time, and everything further, is done through TIM3
@@ -97,9 +97,9 @@ void dmx_reset_sequence(void)
 		DBG_OUT2_H();
 		/* Break end, set floating ping mode for Mark After Break */
 		GPIO_InitTypeDef GPIO_InitStruct = {0};
-		GPIO_InitStruct.Pin = GPIO_PIN_4;
+		GPIO_InitStruct.Pin = DMX_TX_BREAK_Pin;
 		GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
-		HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+		HAL_GPIO_Init(DMX_TX_BREAK_GPIO_Port, &GPIO_InitStruct);
 	}
 	DBG_OUT2_L();
 	DBG_OUT3_L();
