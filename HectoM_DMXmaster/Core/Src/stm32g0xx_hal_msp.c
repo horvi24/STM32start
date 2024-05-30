@@ -190,14 +190,13 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     __HAL_RCC_GPIOA_CLK_ENABLE();
     /**USART2 GPIO Configuration
     PA2     ------> USART2_TX
-    PA3     ------> USART2_RX
     */
-    GPIO_InitStruct.Pin = DBG_TX2_Pin|DBG_RX2_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Pin = DMX_TX2_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.Alternate = GPIO_AF1_USART2;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    HAL_GPIO_Init(DMX_TX2_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN USART2_MspInit 1 */
 
@@ -217,7 +216,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     PA0     ------> USART4_TX
     PA1     ------> USART4_RX
     */
-    GPIO_InitStruct.Pin = DMX_TX4_Pin|DMX_RX4_Pin;
+    GPIO_InitStruct.Pin = DBG_TX4_Pin|DBG_RX4_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -249,9 +248,8 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
 
     /**USART2 GPIO Configuration
     PA2     ------> USART2_TX
-    PA3     ------> USART2_RX
     */
-    HAL_GPIO_DeInit(GPIOA, DBG_TX2_Pin|DBG_RX2_Pin);
+    HAL_GPIO_DeInit(DMX_TX2_GPIO_Port, DMX_TX2_Pin);
 
   /* USER CODE BEGIN USART2_MspDeInit 1 */
 
@@ -269,7 +267,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
     PA0     ------> USART4_TX
     PA1     ------> USART4_RX
     */
-    HAL_GPIO_DeInit(GPIOA, DMX_TX4_Pin|DMX_RX4_Pin);
+    HAL_GPIO_DeInit(GPIOA, DBG_TX4_Pin|DBG_RX4_Pin);
 
   /* USER CODE BEGIN USART4_MspDeInit 1 */
 
