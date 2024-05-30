@@ -15,6 +15,23 @@
   *
   ******************************************************************************
   */
+//https://github.com/aleksandrgilfanov/stm32f4-dmx-transmitter
+/*
+  ******************************************************************************
+  *
+  * TIM16	DMX	Transmiter - Break		IRQ
+  * TIM17	DMR Transmiter - MAB		IRQ		CH1
+  *
+  *
+  * PA4		DMX Tx Break
+  * PA3		JUMPER TO PAR
+  *
+  * USART2	DMX 250kbps 8B-2SB-0P		IRQ from TIM2
+  * USART4	DBG 250kbps 9B-1SB-0P
+  *
+  ******************************************************************************
+  */
+
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -47,6 +64,8 @@ UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart4;
 
 /* USER CODE BEGIN PV */
+uint8_t test_packet[512];
+uint8_t i = 0, up = 1;
 
 /* USER CODE END PV */
 
@@ -59,10 +78,49 @@ static void MX_USART2_UART_Init(void);
 static void MX_USART4_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
+#ifdef __GNUC__
+/* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
+ set to 'Yes') calls __io_putchar() */
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif /* __GNUC__ */
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+PUTCHAR_PROTOTYPE {
+	/* Place your implementation of fputc here */
+	/* e.g. write a character to the USART4 and Loop until the end of transmission */
+	HAL_UART_Transmit(&huart4, (uint8_t*) &ch, 1, 0xFFFF);
+
+	return ch;
+}
+
+void DMX_breath(uint8_t channel) {
+    while (!HAL_GPIO_ReadPin(KEY_GPIO_Port, KEY_Pin)){};
+
+    	test_packet[channel] = i & 0xFF;
+    	test_packet[channel+6] = (0xFF-i) & 0xFF;
+
+    	test_packet[channel] = i & 0xFF;
+    	test_packet[channel+6] = (0xFF-i) & 0xFF;
+
+        HAL_Delay(1);
+
+        if (up) {
+            i = i + 10;
+            if (i > 244)
+                up = 0;
+        } else {
+            i = i - 10;
+            if (i < 10)
+                up = 1;
+        }
+    //}
+}
 
 /* USER CODE END 0 */
 
@@ -101,12 +159,24 @@ int main(void)
   MX_USART4_UART_Init();
   /* USER CODE BEGIN 2 */
 
+  for (int i = 0; i < sizeof(test_packet); i++)
+		test_packet[i] = 0;//i & 0xFF;
+	HAL_Delay(500); //delay for terminal
+
+	//dbg_dumppacket(test_packet,513);
+	printf("\r\nHhectoM DMX512 transmiter (TIM16, TIM17) v0.1 30/05/24\r\n");
+	printf("\r\nfrom https://github.com/aleksandrgilfanov/stm32f4-dmx-transmitter\r\n");
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+		DBG_OUT1_H();
+		dmx_send(test_packet, sizeof(test_packet));
+		DMX_breath(0);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -187,6 +257,16 @@ static void MX_TIM16_Init(void)
   }
   /* USER CODE BEGIN TIM16_Init 2 */
 
+	 /*
+	   * Update flag should be cleaned, to prevent unwanted interrupt. Inerrupt
+	   * flag is generated earlier, by following call:
+	   * HAL_TIM_Base_Init -> TIM_Base_SetConfig -> TIMx->EGR = TIM_EGR_UG
+	   */
+	  __HAL_TIM_CLEAR_IT(&htim16, TIM_FLAG_UPDATE);
+	  /* Enable interrupts, but don't enable timer counter, to prevent interrupts */
+	  __HAL_TIM_ENABLE_IT(&htim16, TIM_IT_UPDATE);
+
+
   /* USER CODE END TIM16_Init 2 */
 
 }
@@ -248,6 +328,21 @@ static void MX_TIM17_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN TIM17_Init 2 */
+
+	 /*
+	   * Update flag should be cleaned, to prevent unwanted interrupt. Inerrupt
+	   * flag is generated earlier, by following call:
+	   * HAL_TIM_Base_Init -> TIM_Base_SetConfig -> TIMx->EGR = TIM_EGR_UG
+	   */
+	  //__HAL_TIM_CLEAR_IT(&htim17, TIM_FLAG_UPDATE);
+	  //__HAL_TIM_CLEAR_IT(&htim17, TIM_IT_CC1);//h24
+
+
+	  /* Enable interrupts, but don't enable timer counter, to prevent interrupts */
+	  __HAL_TIM_ENABLE_IT(&htim17, TIM_IT_UPDATE);
+	  __HAL_TIM_ENABLE_IT(&htim17, TIM_IT_CC1);
+	  //__HAL_TIM_ENABLE_IT(&htim17, TIM_IT_CC2);
+
 
   /* USER CODE END TIM17_Init 2 */
 
@@ -355,10 +450,26 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(DMX_TX_BREAK_GPIO_Port, DMX_TX_BREAK_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, DBG_OUT1_Pin|LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(DMX_DE_GPIO_Port, DMX_DE_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin : DMX_TX_XXX_Pin */
+  GPIO_InitStruct.Pin = DMX_TX_XXX_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(DMX_TX_XXX_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : DMX_TX_BREAK_Pin */
+  GPIO_InitStruct.Pin = DMX_TX_BREAK_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(DMX_TX_BREAK_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : DBG_OUT1_Pin LED_Pin */
   GPIO_InitStruct.Pin = DBG_OUT1_Pin|LED_Pin;

@@ -73,6 +73,10 @@ void Error_Handler(void);
 #define DBG_RX4_GPIO_Port GPIOA
 #define DMX_TX2_Pin GPIO_PIN_2
 #define DMX_TX2_GPIO_Port GPIOA
+#define DMX_TX_XXX_Pin GPIO_PIN_3
+#define DMX_TX_XXX_GPIO_Port GPIOA
+#define DMX_TX_BREAK_Pin GPIO_PIN_4
+#define DMX_TX_BREAK_GPIO_Port GPIOA
 #define DBG_OUT1_Pin GPIO_PIN_15
 #define DBG_OUT1_GPIO_Port GPIOB
 #define DMX_DE_Pin GPIO_PIN_12

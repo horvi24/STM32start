@@ -147,6 +147,7 @@ void SysTick_Handler(void)
 void TIM16_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM16_IRQn 0 */
+    dmx_slot();
 
   /* USER CODE END TIM16_IRQn 0 */
   HAL_TIM_IRQHandler(&htim16);
@@ -161,10 +162,13 @@ void TIM16_IRQHandler(void)
 void TIM17_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM17_IRQn 0 */
+	  dmx_reset_sequence();
 
   /* USER CODE END TIM17_IRQn 0 */
   HAL_TIM_IRQHandler(&htim17);
   /* USER CODE BEGIN TIM17_IRQn 1 */
+  __HAL_TIM_CLEAR_IT(&htim17, TIM_IT_UPDATE);
+  __HAL_TIM_CLEAR_IT(&htim17, TIM_IT_CC1);
 
   /* USER CODE END TIM17_IRQn 1 */
 }

@@ -22,10 +22,10 @@ void dmx_send(const uint8_t *slots, uint16_t size)
 	 * Break (low level), so set pin to output low.
 	 */
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
-	GPIO_InitStruct.Pin = GPIO_PIN_4;
+	GPIO_InitStruct.Pin = DMX_TX_BREAK_Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+	HAL_GPIO_Init(DMX_TX_BREAK_GPIO_Port, &GPIO_InitStruct);
+	HAL_GPIO_WritePin(DMX_TX_BREAK_GPIO_Port, DMX_TX_BREAK_Pin, GPIO_PIN_RESET);
 
 	/*
 	 * Waiting for Break time, and everything further, is done through TIM3
@@ -36,7 +36,7 @@ void dmx_send(const uint8_t *slots, uint16_t size)
 	 */
 
 	/* So, enable this timer */
- 	__HAL_TIM_ENABLE(&htim3);
+ 	__HAL_TIM_ENABLE(&htim17);
 
  	DBG_OUT1_L();
 
@@ -55,14 +55,14 @@ void dmx_slot(void)
 	if (slots_sent < slots_count){
 		//DBG_OUT4_H();
 
-		USART1->TDR = slots_ptr[slots_sent++];
+		USART2->TDR = slots_ptr[slots_sent++];
 	}
 	else {
 		//DBG_OUT5_H();
 
 		/* Stop timer when all slots are sent */
-		TIM2->CR1 &= ~(TIM_CR1_CEN);
-		TIM2->CNT = 0;
+		TIM16->CR1 &= ~(TIM_CR1_CEN);
+		TIM16->CNT = 0;
 
 		/* Indicate that transmission finished */
 		slots_ptr = NULL;
@@ -77,29 +77,29 @@ void dmx_reset_sequence(void)
 	//print_int(TIM3->SR);
     //DBG_OUT1();
 
-	if (TIM3->SR & TIM_IT_UPDATE)						/*!<Update interrupt enable */
+	if (TIM17->SR & TIM_IT_UPDATE)						/*!<Update interrupt enable */
 	{
 		//DBG_OUT3_H();
 		//printf("3");
 
 		/* Reset sequence finished, stop timer */
-		TIM3->CR1 &= ~(TIM_CR1_CEN);                  	/*!<Counter enable */
-		TIM3->CNT = 0;
+		TIM17->CR1 &= ~(TIM_CR1_CEN);                  	/*!<Counter enable */
+		TIM17->CNT = 0;
 
 		/* Send start code 0x00 */
-		USART1->TDR = 0x00;
+		USART2->TDR = 0x00;
 
 		/* Start timer for sending slots */
-		__HAL_TIM_ENABLE(&htim2);
+		__HAL_TIM_ENABLE(&htim17);
 	}
 	else if (TIM3->SR & TIM_IT_CC1)
 	{
 		//DBG_OUT2_H();
 		/* Break end, set floating ping mode for Mark After Break */
 		GPIO_InitTypeDef GPIO_InitStruct = {0};
-		GPIO_InitStruct.Pin = GPIO_PIN_4;
+		GPIO_InitStruct.Pin = DMX_TX_BREAK_Pin;
 		GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
-		HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+		HAL_GPIO_Init(DMX_TX_BREAK_GPIO_Port, &GPIO_InitStruct);
 	}
 	//DBG_OUT2_L();
 	//DBG_OUT3_L();
