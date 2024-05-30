@@ -27,6 +27,7 @@ void dmx_send(const uint8_t *slots, uint16_t size)
 	HAL_GPIO_Init(DMX_TX_BREAK_GPIO_Port, &GPIO_InitStruct);
 	HAL_GPIO_WritePin(DMX_TX_BREAK_GPIO_Port, DMX_TX_BREAK_Pin, GPIO_PIN_RESET);
 
+
 	/*
 	 * Waiting for Break time, and everything further, is done through TIM3
 	 * interrupt. At first interrupt (CC1) this timer changes pin to high
@@ -51,15 +52,13 @@ void dmx_slot(void)
 	 * Each slot is sent in Update Interrupt of TIM2. So, period of TIM2 is
 	 * time, needed for 11bits of slot (44us) and Mark Between Slots (0..1s)
 	 */
-    //DBG_OUT5();
+    //DBG_OUT3_H();
+
 	if (slots_sent < slots_count){
-		//DBG_OUT4_H();
 
 		USART2->TDR = slots_ptr[slots_sent++];
 	}
 	else {
-		//DBG_OUT5_H();
-
 		/* Stop timer when all slots are sent */
 		TIM16->CR1 &= ~(TIM_CR1_CEN);
 		TIM16->CNT = 0;
@@ -67,20 +66,17 @@ void dmx_slot(void)
 		/* Indicate that transmission finished */
 		slots_ptr = NULL;
 	}
-	//DBG_OUT4_L();
-	//DBG_OUT5_L();
+	//DBG_OUT3_L();
+
 }
 
 /* Interrupt handler for sending reset sequence (from TIM3 interrupt) */
 void dmx_reset_sequence(void)
 {
-	//print_int(TIM3->SR);
-    //DBG_OUT1();
 
 	if (TIM17->SR & TIM_IT_UPDATE)						/*!<Update interrupt enable */
 	{
-		//DBG_OUT3_H();
-		//printf("3");
+	    DBG_OUT3_H();
 
 		/* Reset sequence finished, stop timer */
 		TIM17->CR1 &= ~(TIM_CR1_CEN);                  	/*!<Counter enable */
@@ -90,17 +86,19 @@ void dmx_reset_sequence(void)
 		USART2->TDR = 0x00;
 
 		/* Start timer for sending slots */
-		__HAL_TIM_ENABLE(&htim17);
+		__HAL_TIM_ENABLE(&htim16);
 	}
-	else if (TIM3->SR & TIM_IT_CC1)
+	else if (TIM17->SR & TIM_IT_CC1)
 	{
-		//DBG_OUT2_H();
+        DBG_OUT2_H();
 		/* Break end, set floating ping mode for Mark After Break */
 		GPIO_InitTypeDef GPIO_InitStruct = {0};
 		GPIO_InitStruct.Pin = DMX_TX_BREAK_Pin;
 		GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
 		HAL_GPIO_Init(DMX_TX_BREAK_GPIO_Port, &GPIO_InitStruct);
+
 	}
-	//DBG_OUT2_L();
-	//DBG_OUT3_L();
+    DBG_OUT2_L();
+    DBG_OUT3_L();
+
 }

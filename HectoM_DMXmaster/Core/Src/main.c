@@ -23,8 +23,7 @@
   * TIM17	DMR Transmiter - MAB		IRQ		CH1
   *
   *
-  * PA4		DMX Tx Break
-  * PA3		JUMPER TO PAR
+  * PB14	DMX Tx Break
   *
   * USART2	DMX 250kbps 8B-2SB-0P		IRQ from TIM2
   * USART4	DBG 250kbps 9B-1SB-0P
@@ -163,9 +162,13 @@ int main(void)
 		test_packet[i] = 0;//i & 0xFF;
 	HAL_Delay(500); //delay for terminal
 
+
 	//dbg_dumppacket(test_packet,513);
-	printf("\r\nHhectoM DMX512 transmiter (TIM16, TIM17) v0.1 30/05/24\r\n");
-	printf("\r\nfrom https://github.com/aleksandrgilfanov/stm32f4-dmx-transmitter\r\n");
+	printf("\r\nHhectoM DMX512 transmiter (TIM16, TIM17) v0.2 30/05/24\r\n");
+	//printf("\r\nfrom https://github.com/aleksandrgilfanov/stm32f4-dmx-transmitter\r\n");
+
+	//while (HAL_GPIO_ReadPin(KEY_GPIO_Port, KEY_Pin)){};
+
 
   /* USER CODE END 2 */
 
@@ -174,6 +177,8 @@ int main(void)
   while (1)
   {
 		DBG_OUT1_H();
+        //DBG_OUT2();
+        //DBG_OUT3();
 		dmx_send(test_packet, sizeof(test_packet));
 		DMX_breath(0);
 
@@ -292,7 +297,7 @@ static void MX_TIM17_Init(void)
   htim17.Instance = TIM17;
   htim17.Init.Prescaler = TIM_CLK_MHZ-1;
   htim17.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim17.Init.Period = DMX_BREAK-16 + DMX_MAB+12;
+  htim17.Init.Period = DMX_BREAK-25 + DMX_MAB+19;
   htim17.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim17.Init.RepetitionCounter = 0;
   htim17.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -305,7 +310,7 @@ static void MX_TIM17_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_TIMING;
-  sConfigOC.Pulse = DMX_BREAK-16;
+  sConfigOC.Pulse = DMX_BREAK-25;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
@@ -374,7 +379,7 @@ static void MX_USART2_UART_Init(void)
   huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
   huart2.Init.ClockPrescaler = UART_PRESCALER_DIV1;
   huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
-  if (HAL_HalfDuplex_Init(&huart2) != HAL_OK)
+  if (HAL_UART_Init(&huart2) != HAL_OK)
   {
     Error_Handler();
   }
@@ -450,19 +455,20 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(DMX_TX_BREAK_GPIO_Port, DMX_TX_BREAK_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, DBG_OUT3_Pin|DBG_OUT2_Pin|LED_Pin|DBG_OUT1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, DBG_OUT1_Pin|LED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(DMX_TX_BREAK_GPIO_Port, DMX_TX_BREAK_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(DMX_DE_GPIO_Port, DMX_DE_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pin : DMX_TX_XXX_Pin */
-  GPIO_InitStruct.Pin = DMX_TX_XXX_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  /*Configure GPIO pins : DBG_OUT3_Pin DBG_OUT2_Pin LED_Pin DBG_OUT1_Pin */
+  GPIO_InitStruct.Pin = DBG_OUT3_Pin|DBG_OUT2_Pin|LED_Pin|DBG_OUT1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(DMX_TX_XXX_GPIO_Port, &GPIO_InitStruct);
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : DMX_TX_BREAK_Pin */
   GPIO_InitStruct.Pin = DMX_TX_BREAK_Pin;
@@ -470,13 +476,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(DMX_TX_BREAK_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : DBG_OUT1_Pin LED_Pin */
-  GPIO_InitStruct.Pin = DBG_OUT1_Pin|LED_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : DMX_DE_Pin */
   GPIO_InitStruct.Pin = DMX_DE_Pin;

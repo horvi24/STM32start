@@ -73,12 +73,12 @@ void Error_Handler(void);
 #define DBG_RX4_GPIO_Port GPIOA
 #define DMX_TX2_Pin GPIO_PIN_2
 #define DMX_TX2_GPIO_Port GPIOA
-#define DMX_TX_XXX_Pin GPIO_PIN_3
-#define DMX_TX_XXX_GPIO_Port GPIOA
-#define DMX_TX_BREAK_Pin GPIO_PIN_4
-#define DMX_TX_BREAK_GPIO_Port GPIOA
-#define DBG_OUT1_Pin GPIO_PIN_15
-#define DBG_OUT1_GPIO_Port GPIOB
+#define DBG_OUT3_Pin GPIO_PIN_10
+#define DBG_OUT3_GPIO_Port GPIOB
+#define DBG_OUT2_Pin GPIO_PIN_11
+#define DBG_OUT2_GPIO_Port GPIOB
+#define DMX_TX_BREAK_Pin GPIO_PIN_14
+#define DMX_TX_BREAK_GPIO_Port GPIOB
 #define DMX_DE_Pin GPIO_PIN_12
 #define DMX_DE_GPIO_Port GPIOA
 #define SW1_Pin GPIO_PIN_0
@@ -93,6 +93,8 @@ void Error_Handler(void);
 #define KEY_GPIO_Port GPIOB
 #define LED_Pin GPIO_PIN_7
 #define LED_GPIO_Port GPIOB
+#define DBG_OUT1_Pin GPIO_PIN_9
+#define DBG_OUT1_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
