@@ -3,6 +3,10 @@
 
 #include "main.h"
 
+
+#define LED_HB_ON()    HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET)
+#define LED_HB_OFF()   HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET)
+
 //#define DBG_OUT1 //DBG pin PD9
 //#define DBG_OUT2 //DBG pin PD8
 //#define DBG_OUT3 //DBG pin PB13

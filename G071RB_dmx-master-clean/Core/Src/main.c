@@ -18,16 +18,11 @@
 //https://github.com/aleksandrgilfanov/stm32f4-dmx-transmitter
 /*
   ******************************************************************************
-  * TIM1
-  * TIM2	DMX	Transmiter - Break		IRQ
-  * TIM3	DMR Transmiter - MAB		IRQ		CH1
-  * TIM14
-  *
-  * PA4		DMX Tx Break
-  *
-  * USART1	DMX 250kbps 8B-2SB-0P		IRQ from TIM2
+  * TIM2	DMX	Break		        IRQ_UPDATE
+  * TIM3	DMR MAB		            IRQ_UPDATE, IRQ_CC1
+  * PA4		DMX USART Tx Break      IRQ from TIM3
+  * USART1	DMX 250kbps 8B-2SB-0P   IRQ from TIM2
   * USART2	DBG 250kbps 9B-1SB-0P
-  *
   ******************************************************************************
   */
 
@@ -47,6 +42,13 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define PROG_NAME       "G071RB dmx-master\r\n"
+#define PROG_VERSION    "(31/05/24) v1.2\r\n"
+
+#define LED_HB_PERIOD   42
+#define LED_HB_BEAT     1
+#define LED_HB_PAUSE    12
+
 
 /* USER CODE END PD */
 
@@ -65,6 +67,8 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 uint8_t test_packet[512];
 uint8_t i = 0, up = 1;
+uint8_t HeartBeat = 0;
+
 
 /* USER CODE END PV */
 
@@ -98,15 +102,35 @@ PUTCHAR_PROTOTYPE {
 	return ch;
 }
 
+void read_Hardware(void){
+
+    switch (HeartBeat++) {
+        case 0:
+        case LED_HB_PAUSE:
+            LED_HB_ON();
+            break;
+        case LED_HB_BEAT:
+        case (LED_HB_PAUSE + LED_HB_BEAT):
+            LED_HB_OFF();
+            break;
+        case LED_HB_PERIOD:
+            HeartBeat = 0;
+            printf("%010lu:\r\n", HAL_GetTick());
+            break;
+    }
+    if (!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)){
+        printf(PROG_NAME);
+        printf(PROG_VERSION);
+        while (!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)){};
+    };
+
+}
 
 void DMX_breath(uint8_t channel) {
-    while (!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)){};
-
-    	test_packet[channel] = i & 0xFF;
-    	test_packet[channel+6] = (0xFF-i) & 0xFF;
-
-    	test_packet[channel] = i & 0xFF;
-    	test_packet[channel+6] = (0xFF-i) & 0xFF;
+    test_packet[channel] = i & 0xFF;
+    test_packet[channel + 4] = i & 0xFF;
+    test_packet[channel + 10] = (0xFF - i) & 0xFF;
+    test_packet[channel + 14] = (0xFF - i) & 0xFF;
 
         HAL_Delay(1);
 
@@ -161,11 +185,7 @@ int main(void)
 
 	for (int i = 0; i < sizeof(test_packet); i++)
 		test_packet[i] = 0;//i & 0xFF;
-	HAL_Delay(500); //delay for terminal
 
-	//dbg_dumppacket(test_packet,513);
-	printf("\r\nDMX512 transmiter (TIM2, TIM3) v1.1 30/05/24\r\n");
-	printf("\r\nfrom https://github.com/aleksandrgilfanov/stm32f4-dmx-transmitter\r\n");
 
   /* USER CODE END 2 */
 
@@ -177,6 +197,8 @@ int main(void)
 		DBG_OUT1_H();
 		dmx_send(test_packet, sizeof(test_packet));
 		DMX_breath(0);
+
+		read_Hardware();
 
 		//HAL_Delay(100);
 
@@ -310,7 +332,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = TIM_CLK_MHZ-1;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = DMX_BREAK-16 + DMX_MAB+12;
+  htim3.Init.Period = DMX_BREAK-4 + DMX_MAB;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
