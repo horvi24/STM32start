@@ -21,12 +21,14 @@ void dmx_send(const uint8_t *slots, uint16_t size)
 	 * DMX512 packet starts with Reset Sequence. Reset Sequence starts with
 	 * Break (low level), so set pin to output low.
 	 */
+	/* org. verzija, ker je open-drain izhod ni potreben tri-state
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 	GPIO_InitStruct.Pin = DMX_TX_BREAK_Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	HAL_GPIO_Init(DMX_TX_BREAK_GPIO_Port, &GPIO_InitStruct);
 	HAL_GPIO_WritePin(DMX_TX_BREAK_GPIO_Port, DMX_TX_BREAK_Pin, GPIO_PIN_RESET);
-
+    */
+	HAL_GPIO_WritePin(DMX_TX_BREAK_GPIO_Port, DMX_TX_BREAK_Pin, GPIO_PIN_RESET);
 
 	/*
 	 * Waiting for Break time, and everything further, is done through TIM3
@@ -35,25 +37,25 @@ void dmx_send(const uint8_t *slots, uint16_t size)
 	 * floating mode. Right after this, it sends first DMX byte 0x00, and
 	 * turn on second timer for sending slots after MarkBetween slots.
 	 */
-
+	DBG_OUT2_H();
 	/* So, enable this timer */
  	__HAL_TIM_ENABLE(&htim17);
 
- 	DBG_OUT1_L();
+
 
 	/* Wait until transmission of whole DMX packet is finished */
 	while (slots_ptr != NULL) {};
 }
 
-/* Interrupt handler for sending next slot (from TIM2 interrupt) */
+/* Interrupt handler for sending next slot (from TIM16 interrupt) */
 void dmx_slot(void)
 {
 	/*
-	 * Each slot is sent in Update Interrupt of TIM2. So, period of TIM2 is
+	 * Each slot is sent in Update Interrupt of TIM16. So, period of TIM16 is
 	 * time, needed for 11bits of slot (44us) and Mark Between Slots (0..1s)
 	 */
     //DBG_OUT3_H();
-
+    DBG_OUT2();
 	if (slots_sent < slots_count){
 
 		USART2->TDR = slots_ptr[slots_sent++];
@@ -70,17 +72,16 @@ void dmx_slot(void)
 
 }
 
-/* Interrupt handler for sending reset sequence (from TIM3 interrupt) */
+/* Interrupt handler for sending reset sequence (from TIM17 interrupt) */
 void dmx_reset_sequence(void)
 {
-
+    //DBG_OUT2();
 	if (TIM17->SR & TIM_IT_UPDATE)						/*!<Update interrupt enable */
 	{
-	    DBG_OUT3_H();
-
 		/* Reset sequence finished, stop timer */
 		TIM17->CR1 &= ~(TIM_CR1_CEN);                  	/*!<Counter enable */
 		TIM17->CNT = 0;
+        DBG_OUT3_L();
 
 		/* Send start code 0x00 */
 		USART2->TDR = 0x00;
@@ -90,15 +91,18 @@ void dmx_reset_sequence(void)
 	}
 	else if (TIM17->SR & TIM_IT_CC1)
 	{
-        DBG_OUT2_H();
+	    DBG_OUT2_L();
 		/* Break end, set floating ping mode for Mark After Break */
+	    /* org. verzija, ker je open-drain izhod ni potreben tri-state
 		GPIO_InitTypeDef GPIO_InitStruct = {0};
 		GPIO_InitStruct.Pin = DMX_TX_BREAK_Pin;
 		GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
 		HAL_GPIO_Init(DMX_TX_BREAK_GPIO_Port, &GPIO_InitStruct);
-
+		 */
+		HAL_GPIO_WritePin(DMX_TX_BREAK_GPIO_Port, DMX_TX_BREAK_Pin, GPIO_PIN_SET);
+        DBG_OUT3_H();
 	}
-    DBG_OUT2_L();
-    DBG_OUT3_L();
+    //DBG_OUT2_L();
+    //DBG_OUT3_L();
 
 }

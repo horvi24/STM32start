@@ -9,6 +9,15 @@
 //#define DBG_OUT4 //DBG pin PB10
 //#define DBG_OUT5 //DBG pin PB15
 
+#define OPT_SW1()       !HAL_GPIO_ReadPin(SW1_GPIO_Port, SW1_Pin)
+#define OPT_SW2()       !HAL_GPIO_ReadPin(SW2_GPIO_Port, SW2_Pin)
+#define OPT_SW3()       !HAL_GPIO_ReadPin(SW3_GPIO_Port, SW3_Pin)
+#define OPT_SW4()       !HAL_GPIO_ReadPin(SW4_GPIO_Port, SW4_Pin)
+
+#define LED_HB_ON()    HAL_GPIO_WritePin(LED_HB_GPIO_Port, LED_HB_Pin, GPIO_PIN_SET)
+#define LED_HB_OFF()   HAL_GPIO_WritePin(LED_HB_GPIO_Port, LED_HB_Pin, GPIO_PIN_RESET)
+
+
 #define DEBUG_OUT_ENABLE
 
 #ifdef DEBUG_OUT_ENABLE
@@ -45,6 +54,7 @@
 #define	DBG_OUT5()
 #endif
 
+void print_half_byte(uint8_t byte);
 void print_byte(uint8_t byte);
 void print_int(uint16_t byte);
 

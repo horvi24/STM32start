@@ -35,6 +35,11 @@ void print_byte(uint8_t byte)
     printf("%s %s", bit_rep[byte >> 4], bit_rep[byte & 0x0F]);
 }
 
+void print_half_byte(uint8_t byte)
+{
+    printf("%s", bit_rep[byte & 0x0F]);
+}
+
 void dbg_dumppacket(uint8_t *src_packet, uint16_t len)
 {
 	char *ptr = dbg_buf;
