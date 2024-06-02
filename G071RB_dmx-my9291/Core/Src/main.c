@@ -130,7 +130,13 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+    DBG_OUT1();
     DBG_OUT2();
+    DBG_OUT3();
+    DBG_OUT4();
+    DBG_OUT5();
+    DBG_OUT6();
+    DBG_OUT7();
 
     while (1) {
 
@@ -298,7 +304,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 39;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 1000-1;
+  htim3.Init.Period = PWM_PERIOD-1;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -332,7 +338,7 @@ static void MX_TIM3_Init(void)
   {
     Error_Handler();
   }
-  sConfigOC.Pulse = 240;
+  sConfigOC.Pulse = PWM_B_INIT;
   if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
   {
     Error_Handler();
@@ -469,8 +475,8 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, DBG_OUT4_Pin|DBG_OUT3_Pin|DBG_OUT5_Pin|LED_DCKI_Pin
-                          |LED_DI_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, DBG_OUT7_Pin|DBG_OUT4_Pin|DBG_OUT3_Pin|DBG_OUT5_Pin
+                          |LED_DCKI_Pin|LED_DI_Pin|DBG_OUT6_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, DBG_OUT2_Pin|DBG_OUT1_Pin, GPIO_PIN_RESET);
@@ -488,10 +494,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : DBG_OUT4_Pin DBG_OUT3_Pin DBG_OUT5_Pin LED_DCKI_Pin
-                           LED_DI_Pin */
-  GPIO_InitStruct.Pin = DBG_OUT4_Pin|DBG_OUT3_Pin|DBG_OUT5_Pin|LED_DCKI_Pin
-                          |LED_DI_Pin;
+  /*Configure GPIO pins : DBG_OUT7_Pin DBG_OUT4_Pin DBG_OUT3_Pin DBG_OUT5_Pin
+                           LED_DCKI_Pin LED_DI_Pin DBG_OUT6_Pin */
+  GPIO_InitStruct.Pin = DBG_OUT7_Pin|DBG_OUT4_Pin|DBG_OUT3_Pin|DBG_OUT5_Pin
+                          |LED_DCKI_Pin|LED_DI_Pin|DBG_OUT6_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

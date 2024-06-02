@@ -266,7 +266,7 @@ void my92xx_init(uint8_t model, uint8_t chips, uint8_t command) {
     _model = model;
     _chips = chips;
 
-    DBG_OUT5_H();    //**//**//
+    //DBG_OUT5_H();    //**//**//
 
     if (_model == MY92XX_MODEL_MY9291) {
         _channels = 4 * _chips;
@@ -299,5 +299,5 @@ void my92xx_init(uint8_t model, uint8_t chips, uint8_t command) {
     my92xx_set_cmd(command);
     my92xx_setState(true);
 
-    DBG_OUT5_L();    //**//**//
+    //DBG_OUT5_L();    //**//**//
 }

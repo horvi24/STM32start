@@ -72,7 +72,7 @@ void dbg_dumppacket(uint8_t *src_packet, uint16_t len)
 
 void RGBW_red(void) {
     uint8_t i = 0, up = 1;
-    while (HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)) {
+    while (KEY_PRESSED()) {
 
         led_set(MY92XX_R1, i);
         my92xx_setChannel(MY92XX_R1, i);

@@ -65,17 +65,15 @@ uint16_t dmx_receive_24(uint8_t *dest) {
 	if (PacketFlag == 0) {
 		return 0;
 	} else {
-
 		len = PacketLength;
 		memcpy(dest, Packet, len);
 		PacketFlag = 0;
 
-		if (!HAL_GPIO_ReadPin(SW_BLUE_GPIO_Port, SW_BLUE_Pin)) {
+		if (KEY_PRESSED()) {
 			printf("R24< pl:%3d len:%3d pf:%3d\r\n", PacketLength, len,
 					PacketFlag);
 			dbg_dumppacket(Packet, len);
 		}
-
 		return len;
 	}
 }
@@ -156,7 +154,7 @@ static bool next_break_rising(uint32_t OverflowCount) {
 static void rising_edge(void) {
 	uint32_t OverflowCount = GlobalOverflowCount;
 
-	/* Store MAB Rising Edge Counter */
+ 	/* Store MAB Rising Edge Counter */
 	Counter2 = __HAL_TIM_GET_COUNTER(&htim1);
 
 	/* Disable rising edge interrupt */
@@ -219,7 +217,6 @@ static void falling_edge(void) {
 static void frame_error_handler(uint32_t Counter) {
 
 	/* actually FE is 40 usec after Break start... */
-
 	if ((BreakFlag == 0) && (MABFlag == 0)) {
 		/* Store first Break start counter */
 		Counter1 = Counter;
@@ -229,7 +226,7 @@ static void frame_error_handler(uint32_t Counter) {
 		/* Store Overflows, it will be used to calculate time between Breaks */
 		BreakOverflowCount = GlobalOverflowCount;
 	} else
-		return;
+       return;
 
 	/*
 	 * Save already received packet length, but it must be used only when
@@ -282,14 +279,13 @@ static void receive_data_handler(uint32_t Data) {
 
 void dmx_uart_handler(UART_HandleTypeDef *huart) {
 	uint32_t Counter = __HAL_TIM_GET_COUNTER(&htim1);
-//-h24	uint32_t StatusRead = huart->Instance->SR;
 	uint32_t StatusRead = huart->Instance->ISR; //+h24
-//-h24	uint32_t Data = huart->Instance->DR;
 	uint32_t Data = huart->Instance->RDR;		//+h24
 
 	/* Frame Error interrupt happens after 10 bits of 0 (~40us), so it is
 	 * after first 40 us of Break */
 	if ((StatusRead & UART_FLAG_FE) == UART_FLAG_FE) {
+	    DBG_OUT1();
 		frame_error_handler(Counter);
 		__HAL_UART_CLEAR_FEFLAG(huart);
 		return;
@@ -308,11 +304,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 	if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) {
-		DBG_OUT1_L();    //**//**//
-		falling_edge();
+	    DBG_OUT2_L();
+	falling_edge();
 	} else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) {
-		DBG_OUT1_H();    //**//**//
+        DBG_OUT2_H();
 		rising_edge();
-	}
+	/*
+    } else if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_CLEARED) {   //h24 All active channels cleared ???
+        DBG_OUT2();
+    */
+    }
+
 }
 

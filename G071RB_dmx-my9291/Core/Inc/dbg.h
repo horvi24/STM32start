@@ -13,7 +13,6 @@
 
 #define KEY_PRESSED()   !HAL_GPIO_ReadPin(KEY_GPIO_Port, KEY_Pin)
 
-
 //#define DEBUG_MY92XX
 //#define DEBUG_DMX_DBG1
 //#define DEBUG_DMX_DBG1_2
@@ -24,12 +23,13 @@
 //#define DEBUG_CORE_DBG2
 //#define DEBUG_MY92XX_DBG2_INIT
 
-
 //#define DBG_OUT1 //DBG pin PD9
 //#define DBG_OUT2 //DBG pin PD8
 //#define DBG_OUT3 //DBG pin PB13
 //#define DBG_OUT4 //DBG pin PB10
 //#define DBG_OUT5 //DBG pin PB15
+//#define DBG_OUT6 //DBG pin PB6
+//#define DBG_OUT7 //DBG pin PB2
 
 #define DEBUG_OUT_ENABLE
 
@@ -49,6 +49,12 @@
 #define DBG_OUT5_H()    HAL_GPIO_WritePin(DBG_OUT5_GPIO_Port, DBG_OUT5_Pin, GPIO_PIN_SET)
 #define DBG_OUT5_L()    HAL_GPIO_WritePin(DBG_OUT5_GPIO_Port, DBG_OUT5_Pin, GPIO_PIN_RESET)
 #define DBG_OUT5()      DBG_OUT5_H(); DBG_OUT5_L()
+#define DBG_OUT6_H()    HAL_GPIO_WritePin(DBG_OUT6_GPIO_Port, DBG_OUT6_Pin, GPIO_PIN_SET)
+#define DBG_OUT6_L()    HAL_GPIO_WritePin(DBG_OUT6_GPIO_Port, DBG_OUT6_Pin, GPIO_PIN_RESET)
+#define DBG_OUT6()      DBG_OUT6_H(); DBG_OUT6_L()
+#define DBG_OUT7_H()    HAL_GPIO_WritePin(DBG_OUT7_GPIO_Port, DBG_OUT7_Pin, GPIO_PIN_SET)
+#define DBG_OUT7_L()    HAL_GPIO_WritePin(DBG_OUT7_GPIO_Port, DBG_OUT7_Pin, GPIO_PIN_RESET)
+#define DBG_OUT7()      DBG_OUT7_H(); DBG_OUT7_L()
 #else
 #define DBG_OUT1_H()
 #define DBG_OUT1_L()
@@ -65,6 +71,12 @@
 #define DBG_OUT5_H()
 #define DBG_OUT5_L()
 #define DBG_OUT5()
+#define DBG_OUT6_H()
+#define DBG_OUT6_L()
+#define DBG_OUT6()
+#define DBG_OUT7_H()
+#define DBG_OUT7_L()
+#define DBG_OUT7()
 #endif
 
 void print_half_byte(uint8_t byte);

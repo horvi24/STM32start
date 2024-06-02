@@ -27,7 +27,7 @@ void core_process_h24(void) {
 	if (len == 0) {
 		my92xx_update();
 	} else {
-		DBG_OUT5();
+		//DBG_OUT5();
 
 		led_set(0, curve_fn(packet[DMX_ADDR_LED_RGBW_PWM]));
 		led_set(1, curve_fn(packet[DMX_ADDR_LED_RGBW_PWM + 1]));

@@ -59,6 +59,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define PWM_PERIOD 1000
+#define PWM_B_INIT 240
 #define KEY_Pin GPIO_PIN_13
 #define KEY_GPIO_Port GPIOC
 #define MCO_Pin GPIO_PIN_0
@@ -77,6 +79,8 @@ void Error_Handler(void);
 #define PWM_B_GPIO_Port GPIOB
 #define PWM_W_Pin GPIO_PIN_1
 #define PWM_W_GPIO_Port GPIOB
+#define DBG_OUT7_Pin GPIO_PIN_2
+#define DBG_OUT7_GPIO_Port GPIOB
 #define DBG_OUT4_Pin GPIO_PIN_10
 #define DBG_OUT4_GPIO_Port GPIOB
 #define DBG_OUT3_Pin GPIO_PIN_13
@@ -95,6 +99,8 @@ void Error_Handler(void);
 #define LED_DCKI_GPIO_Port GPIOB
 #define LED_DI_Pin GPIO_PIN_5
 #define LED_DI_GPIO_Port GPIOB
+#define DBG_OUT6_Pin GPIO_PIN_6
+#define DBG_OUT6_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
