@@ -36,7 +36,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define PROG_NAME       "G071RB DMX512 slave\r\n"
-#define PROG_VERSION    "(21/05/24) beta 1.1\r\n"
+#define PROG_VERSION    "(02/06/24) beta 1.2\r\n"
 
 /* USER CODE END PD */
 
